@@ -1,6 +1,5 @@
 import argparse
 import wave
-import random
 import array
 import struct
 import math
@@ -22,7 +21,7 @@ class Beep:
 	NUM_CHANNELS = 1
 	SAMPLE_BYTE_WIDTH = 2
 	RAMP_FRACTION = 0.05 # percent each end used on ramping
-	def __init__(self, f, t, t_pad=0):
+	def __init__(self, f, t, v, t_pad=0):
 		buffer = io.BytesIO('')
 		note_output = wave.open(buffer, 'wb')
 		note_output.setparams((self.NUM_CHANNELS, self.SAMPLE_BYTE_WIDTH, int(self.SAMPLES_PER_SEC), 0, 'NONE', 'not compressed'))
@@ -35,7 +34,7 @@ class Beep:
                   + [1 for x in range(0, plateau_samples)] \
                   + [(1.0 - (x / float(ramp_samples))) for x in range(0, ramp_samples)] \
 				  + [0 for x in range(0, pad_samples)]
-		tone = gen_tone(i_range, f, 30000.0, self.SAMPLES_PER_SEC)
+		tone = gen_tone(i_range, f, v, self.SAMPLES_PER_SEC)
 		note = mix_signals(amplitude, tone)
 		packed_values = array.array('h', [int(s) for s in note])
 		note_output.writeframes(packed_values.tostring())
@@ -46,7 +45,8 @@ class Beep:
 		
 class MorsePlayer:
 	f = 880
-	wpm = 10 # The number of "PARIS" transmissions per minute
+	v = 30000
+	wpm = 5 # The number of "PARIS" transmissions per minute
 	_DITS_PER_WORD = 50 # The representative word ("PARIS") takes 50 dots
 	
 	_MORSE_KEY = {
@@ -88,9 +88,9 @@ class MorsePlayer:
 			seq = self._MORSE_KEY[char.upper()]
 			dit_t = self._dot_duration_s()
 			if dit == None:
-				dit = Beep(self.f, dit_t, dit_t)
+				dit = Beep(self.f, dit_t, self.v, dit_t)
 			if dah == None:
-				dah = Beep(self.f, dit_t * 3, dit_t)
+				dah = Beep(self.f, dit_t * 3, self.v,dit_t)
 			for symbol in seq:
 				sys.stdout.write(symbol)
 				if symbol == '.':
@@ -104,7 +104,19 @@ class MorsePlayer:
 		return (60.0 / self.wpm) / self._DITS_PER_WORD 
 
 if __name__ == '__main__':
+	parser = argparse.ArgumentParser()
+	parser.add_argument("-w", "--wpm", default=5, type=float, help="words per minute at which to play morse code")
+	parser.add_argument("-f", "--freq", default=880, type=float, help="frequency of the tone to play")
+	parser.add_argument("-v", "--vol", default=30000, type=float, help="volume of the tone to play")
+	args = parser.parse_args()
+
 	mp = MorsePlayer()
+	# print("F was %f, becomes %f"%(mp.f, args.freq))
+	mp.f = args.freq
+	# print("V was %f, becomes %f"%(mp.v, args.vol))
+	mp.v = args.vol
+	# print("WPM was %f, becomes %f"%(mp.wpm, args.wpm))
+	mp.wpm = args.wpm
 	# mp.playMorse('Hello')
 	# b = Beep(880, 5)
 	# print('playing')
