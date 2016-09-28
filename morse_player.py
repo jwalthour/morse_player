@@ -50,6 +50,7 @@ class MorsePlayer:
 	_DITS_PER_WORD = 50 # The representative word ("PARIS") takes 50 dots
 	
 	_MORSE_KEY = {
+		' ':[' '],
 		'A':['.', '-'],
 		'B':['-', '.', '.', '.'],
 		'C':['-', '.', '-', '.'],
@@ -82,7 +83,7 @@ class MorsePlayer:
 		for c in char_string:
 			self.playChar(c)
 		
-	def playChar(self, char, dit=None, dah=None):
+	def playChar(self, char, dit=None, dah=None, gap=None):
 		if char.upper() in self._MORSE_KEY:
 			sys.stdout.write(char + '    ')
 			seq = self._MORSE_KEY[char.upper()]
@@ -91,12 +92,16 @@ class MorsePlayer:
 				dit = Beep(self.f, dit_t, self.v, dit_t)
 			if dah == None:
 				dah = Beep(self.f, dit_t * 3, self.v,dit_t)
+			if gap == None:
+				gap = Beep(self.f, 0, self.v,dit_t * 4)
 			for symbol in seq:
 				sys.stdout.write(symbol)
 				if symbol == '.':
 					dit.play()
 				elif symbol == '-':
 					dah.play()
+				elif symbol == ' ':
+					gap.play()
 			sys.stdout.write("\n")
 			time.sleep(dit_t * 3)
 			
