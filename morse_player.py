@@ -22,17 +22,19 @@ class Beep:
 	NUM_CHANNELS = 1
 	SAMPLE_BYTE_WIDTH = 2
 	RAMP_FRACTION = 0.05 # percent each end used on ramping
-	def __init__(self, f, t):
+	def __init__(self, f, t, t_pad=0):
 		buffer = io.BytesIO('')
 		note_output = wave.open(buffer, 'wb')
 		note_output.setparams((self.NUM_CHANNELS, self.SAMPLE_BYTE_WIDTH, int(self.SAMPLES_PER_SEC), 0, 'NONE', 'not compressed'))
 		
-		i_range = range(0, int(self.SAMPLES_PER_SEC * t))
+		i_range = range(0, int(self.SAMPLES_PER_SEC * (t + t_pad)))
 		ramp_samples = int(self.RAMP_FRACTION * t * self.SAMPLES_PER_SEC)
 		plateau_samples = int(t * self.SAMPLES_PER_SEC) - 2 * ramp_samples;
+		pad_samples = int(t_pad * self.SAMPLES_PER_SEC)
 		amplitude = [(x / float(ramp_samples)     ) for x in range(0, ramp_samples)] \
                   + [1 for x in range(0, plateau_samples)] \
-                  + [(1.0 - (x / float(ramp_samples))) for x in range(0, ramp_samples)]
+                  + [(1.0 - (x / float(ramp_samples))) for x in range(0, ramp_samples)] \
+				  + [0 for x in range(0, pad_samples)]
 		tone = gen_tone(i_range, f, 30000.0, self.SAMPLES_PER_SEC)
 		note = mix_signals(amplitude, tone)
 		packed_values = array.array('h', [int(s) for s in note])
@@ -86,9 +88,9 @@ class MorsePlayer:
 			seq = self._MORSE_KEY[char.upper()]
 			dit_t = self._dot_duration_s()
 			if dit == None:
-				dit = Beep(self.f, dit_t)
+				dit = Beep(self.f, dit_t, dit_t)
 			if dah == None:
-				dah = Beep(self.f, dit_t * 3)
+				dah = Beep(self.f, dit_t * 3, dit_t)
 			for symbol in seq:
 				sys.stdout.write(symbol)
 				if symbol == '.':
