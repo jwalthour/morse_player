@@ -93,6 +93,11 @@ class MorsePlayer:
             self._wpm = wpm
             self._clearTones()
 
+    def setIntercharGap(self, gap):
+        if(gap > 0):
+            self._interchar_gap_time_dits = gap
+            self._clearTones()
+
     def playMorse(self, char_string):
         for c in char_string:
             self.playChar(c)
@@ -132,7 +137,8 @@ class MorsePlayer:
         self._dit = Beep(self._tone_f, dit_t, self._tone_vol, dit_t)
         self._dah = Beep(self._tone_f, dit_t * 3, self._tone_vol,dit_t)
         # Silence between characters
-        self._interchar_gap = Beep(self._tone_f, 0, self._tone_vol,dah_t)
+        self._interchar_gap = Beep(self._tone_f, 0, self._tone_vol,
+            dit_t * self._interchar_gap_time_dits)
         # Played as a silent dit, but remember there are two interchar gaps,
         # so this winds up being 7 dits of silence between words.
         self._word_gap = Beep(self._tone_f, 0, self._tone_vol,dit_t)
@@ -142,12 +148,14 @@ if __name__ == '__main__':
     parser.add_argument("-w", "--wpm", default=5, type=float, help="words per minute at which to play morse code (default 5)")
     parser.add_argument("-f", "--freq", default=880, type=float, help="frequency of the tone to play, in Hz (default 880)")
     parser.add_argument("-v", "--vol", default=50, type=float, help="volume of the tone to play, in percent (default 50)")
+    parser.add_argument("-g", "--gap", default=3, type=float, help="time gap between characters, in dits (default 3)")
     args = parser.parse_args()
 
     mp = MorsePlayer()
     mp.setFreq(args.freq)
     mp.setVol(args.vol)
     mp.setWpm(args.wpm)
+    mp.setIntercharGap(args.gap)
     
     in_data = sys.stdin.read()
     while(in_data):
