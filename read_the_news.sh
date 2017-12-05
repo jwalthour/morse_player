@@ -3,14 +3,14 @@ function readNews {
     SOURCE=$1
     echo Downloading $SOURCE
     curl $SOURCE 2>/dev/null \
-        | sed 's/></>\n</g' \
+        | sed 's/></>\n  </g' \
         | grep '<title>' \
         | sed  's/<title>\(.*\)<\/title>/\1/g' \
         | sed "s/&apos;/'/g" \
         | sed 's/Top Stories - Google News//g' \
         | sed 's/Reuters News//g' \
         | sed 's/Reuters: World News//g' \
-        | ipython morse_player.py -- -v 20;
+        | ipython morse_player.py -- -v 70 -w 20 -g 30;
 }
 SOURCE0=http://feeds.reuters.com/Reuters/worldNews?format=xml
 SOURCE1=https://news.google.com/?output=rss
