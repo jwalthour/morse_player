@@ -94,5 +94,10 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ZenAudio\219159__jagadamba__frogblock03.wav" />
+    <EmbeddedResource Include="ZenAudio\219161__jagadamba__frogblock01.wav" />
+    <EmbeddedResource Include="ZenAudio\346328__isteak__bright-tibetan-bell-ding-b-note-cleaner.wav" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
