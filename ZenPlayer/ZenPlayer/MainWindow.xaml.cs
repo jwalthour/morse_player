@@ -36,24 +36,35 @@ namespace ZenPlayer
             await Task.Run(() => { dahPlayer.Load(); });
 
             await Task.Run(() => { ditPlayer.PlaySync(); });
-            await Task.Delay(150);
+            await Task.Delay(67);
             await Task.Run(() => { ditPlayer.PlaySync(); });
-            await Task.Delay(150);
+            await Task.Delay(67);
             await Task.Run(() => { ditPlayer.PlaySync(); });
-            await Task.Delay(150);
+            await Task.Delay(67);
             await Task.Run(() => { ditPlayer.PlaySync(); });
-            await Task.Delay(150);
+            await Task.Delay(67);
 
-            await Task.Delay(450);
+            //await Task.Delay(67 * 3);
+            await Task.Delay(1000);
 
             await Task.Run(() => { dahPlayer.PlaySync(); });
-            await Task.Delay(150);
-            await Task.Run(() => { ditPlayer.PlaySync(); });
-            await Task.Delay(150);
+            await Task.Delay(67);
             await Task.Run(() => { dahPlayer.PlaySync(); });
-            await Task.Delay(150);
+            await Task.Delay(67);
+            await Task.Run(() => { dahPlayer.PlaySync(); });
+            await Task.Delay(67);
+
+            //await Task.Delay(67 * 3);
+            await Task.Delay(1000);
+
+            await Task.Run(() => { dahPlayer.PlaySync(); });
+            await Task.Delay(67);
             await Task.Run(() => { ditPlayer.PlaySync(); });
-            await Task.Delay(150);
+            await Task.Delay(67);
+            await Task.Run(() => { dahPlayer.PlaySync(); });
+            await Task.Delay(67);
+            await Task.Run(() => { ditPlayer.PlaySync(); });
+            await Task.Delay(67);
 
         }
 
