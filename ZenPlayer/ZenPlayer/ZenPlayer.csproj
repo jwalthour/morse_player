@@ -102,5 +102,9 @@
   <ItemGroup>
     <EmbeddedResource Include="ZenAudio\trimmed_346328__isteak__bright-tibetan-bell-ding-b-note-cleaner.wav" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ZenAudio\dah_202ms.wav" />
+    <EmbeddedResource Include="ZenAudio\dit0_67ms.wav" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
