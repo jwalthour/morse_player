@@ -27,7 +27,8 @@ namespace ZenPlayer
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-
+            System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"C:\Users\spami\git\jwalthour\morse_player\ZenPlayer\ZenPlayer\ZenAudio\346328__isteak__bright-tibetan-bell-ding-b-note-cleaner.wav");
+            player.Play();
         }
     }
 }
