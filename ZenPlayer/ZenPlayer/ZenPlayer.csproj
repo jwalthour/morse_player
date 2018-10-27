@@ -99,5 +99,8 @@
     <EmbeddedResource Include="ZenAudio\219161__jagadamba__frogblock01.wav" />
     <EmbeddedResource Include="ZenAudio\346328__isteak__bright-tibetan-bell-ding-b-note-cleaner.wav" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ZenAudio\trimmed_346328__isteak__bright-tibetan-bell-ding-b-note-cleaner.wav" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
