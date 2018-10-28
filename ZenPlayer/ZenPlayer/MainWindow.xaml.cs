@@ -20,52 +20,16 @@ namespace ZenPlayer
     /// </summary>
     public partial class MainWindow : Window
     {
+        Player player = new Player();
         public MainWindow()
         {
             InitializeComponent();
+            player.LoadFiles(Player.AvailableSettings[0]);
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            System.Reflection.Assembly a = System.Reflection.Assembly.GetExecutingAssembly();
-            System.IO.Stream ditStream = a.GetManifestResourceStream("ZenPlayer.ZenAudio.dit0_67ms.wav");
-            System.IO.Stream dahStream = a.GetManifestResourceStream("ZenPlayer.ZenAudio.dah_202ms.wav");
-            System.Media.SoundPlayer ditPlayer = new System.Media.SoundPlayer(ditStream);
-            System.Media.SoundPlayer dahPlayer = new System.Media.SoundPlayer(dahStream);
-            await Task.Run(() => { ditPlayer.Load(); });
-            await Task.Run(() => { dahPlayer.Load(); });
-
-            await Task.Run(() => { ditPlayer.PlaySync(); });
-            await Task.Delay(67);
-            await Task.Run(() => { ditPlayer.PlaySync(); });
-            await Task.Delay(67);
-            await Task.Run(() => { ditPlayer.PlaySync(); });
-            await Task.Delay(67);
-            await Task.Run(() => { ditPlayer.PlaySync(); });
-            await Task.Delay(67);
-
-            //await Task.Delay(67 * 3);
-            await Task.Delay(1000);
-
-            await Task.Run(() => { dahPlayer.PlaySync(); });
-            await Task.Delay(67);
-            await Task.Run(() => { dahPlayer.PlaySync(); });
-            await Task.Delay(67);
-            await Task.Run(() => { dahPlayer.PlaySync(); });
-            await Task.Delay(67);
-
-            //await Task.Delay(67 * 3);
-            await Task.Delay(1000);
-
-            await Task.Run(() => { dahPlayer.PlaySync(); });
-            await Task.Delay(67);
-            await Task.Run(() => { ditPlayer.PlaySync(); });
-            await Task.Delay(67);
-            await Task.Run(() => { dahPlayer.PlaySync(); });
-            await Task.Delay(67);
-            await Task.Run(() => { ditPlayer.PlaySync(); });
-            await Task.Delay(67);
-
+            player.Play();
         }
 
         //private async void PlayChar(char c)
