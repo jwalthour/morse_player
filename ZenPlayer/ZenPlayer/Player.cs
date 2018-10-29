@@ -81,7 +81,6 @@ namespace ZenPlayer
 
         public Player()
         {
-            pauseTokenSource = new CancellationTokenSource();
             CurState = State.STOPPED;
         }
 
@@ -108,6 +107,7 @@ namespace ZenPlayer
         public void Play()
         {
             ambientPlayer?.Play();
+            pauseTokenSource = new CancellationTokenSource();
             pauseToken = pauseTokenSource.Token;
             Task task = Task.Run((Action)PlayMorseCode);
         }
