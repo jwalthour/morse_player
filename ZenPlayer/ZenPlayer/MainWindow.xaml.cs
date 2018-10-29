@@ -29,6 +29,7 @@ namespace ZenPlayer
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            player.Text = TextToPlay.Text;
             player.Play();
         }
 
