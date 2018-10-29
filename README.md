@@ -2,7 +2,7 @@
 A player of morse code.
 
 # Windows installation instructions
-1. Click [here](https://github.com/jwalthour/morse_player/blob/master/ZenPlayer.exe) to download the latest Zen Morse Code Player. 
+1. Click [here](https://github.com/jwalthour/morse_player/blob/master/ZenPlayer.exe?raw=true) to download the latest Zen Morse Code Player. 
 2. When prompted to save or run, choose "save".  Put it someplace you'll remember.
 3. Whenever you want to playback morse code, double-click this file.
 
