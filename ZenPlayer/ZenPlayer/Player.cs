@@ -2,14 +2,36 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ZenPlayer
 {
     class Player
     {
-        public delegate void Handler();
-        public event Handler OnFinishedPlaying;
+        public delegate void StateChanged(State newState);
+        public event StateChanged OnStateChanged;
+
+        public enum State
+        {
+            STOPPED,
+            PLAYING,
+            PAUSED,
+        };
+
+        private State curState;
+        public State CurState
+        {
+            get
+            {
+                return curState;
+            }
+            private set
+            {
+                curState = value;
+                OnStateChanged?.Invoke(curState);
+            }
+        }
 
         /// <summary>
         /// A collection of all the settings required for playback.
@@ -54,6 +76,14 @@ namespace ZenPlayer
         private System.Media.SoundPlayer ditPlayer = null;
         private System.Media.SoundPlayer dahPlayer = null;
         private System.Media.SoundPlayer ambientPlayer = null;
+        CancellationTokenSource pauseTokenSource;
+        CancellationToken pauseToken;
+
+        public Player()
+        {
+            pauseTokenSource = new CancellationTokenSource();
+            CurState = State.STOPPED;
+        }
 
         /// <summary>
         /// Prepares to play the given settings by loading them into memory.
@@ -78,6 +108,7 @@ namespace ZenPlayer
         public void Play()
         {
             ambientPlayer?.Play();
+            pauseToken = pauseTokenSource.Token;
             Task task = Task.Run((Action)PlayMorseCode);
         }
 
@@ -86,12 +117,15 @@ namespace ZenPlayer
             Pause();
             // Reset state
             nextTextIndex = 0;
+            CurState = State.STOPPED;
         }
-
-
 
         public void Pause()
         {
+            if(CurState == State.PLAYING)
+            {
+                pauseTokenSource.Cancel();
+            }
             ditPlayer?.Stop();
             dahPlayer?.Stop();
             ambientPlayer?.Stop();
@@ -103,51 +137,59 @@ namespace ZenPlayer
         /// </summary>
         private async void PlayMorseCode()
         {
-            for (int i = nextTextIndex; i < Text.Length; ++i)
+            CurState = State.PLAYING;
+            try
             {
-                char c = Char.ToUpper(Text[i]);
-                int symbolTime = 0;
-                if (c == ' ')
+                for (; nextTextIndex < Text.Length && !pauseToken.IsCancellationRequested; ++nextTextIndex)
                 {
-                    // Strict morse code timing says a space is a silent Dah,
-                    // which is the duration of 3 dits.
-                    symbolTime = activeSettings.DitDuration * 3;
-                    await Task.Delay(symbolTime);
-                }
-                else if (symbols.ContainsKey(c))
-                {
-                    MorseElement[] seq = symbols[c];
-                    foreach (MorseElement el in seq)
+                    char c = Char.ToUpper(Text[nextTextIndex]);
+                    int symbolTime = 0;
+                    if (c == ' ')
                     {
-                        switch (el)
+                        // Strict morse code timing says a space is a silent Dah,
+                        // which is the duration of 3 dits.
+                        symbolTime = activeSettings.DitDuration * 3;
+                        await Task.Delay(symbolTime, pauseToken);
+                    }
+                    else if (symbols.ContainsKey(c))
+                    {
+                        MorseElement[] seq = symbols[c];
+                        foreach (MorseElement el in seq)
                         {
-                            case MorseElement.DIT:
-                                symbolTime += activeSettings.DitDuration;
-                                await Task.Run(() => { ditPlayer.PlaySync(); });
-                                break;
-                            case MorseElement.DAH:
-                                symbolTime += activeSettings.DahDuration;
-                                await Task.Run(() => { dahPlayer.PlaySync(); });
-                                break;
+                            switch (el)
+                            {
+                                case MorseElement.DIT:
+                                    symbolTime += activeSettings.DitDuration;
+                                    await Task.Run(() => { ditPlayer.PlaySync(); }, pauseToken);
+                                    break;
+                                case MorseElement.DAH:
+                                    symbolTime += activeSettings.DahDuration;
+                                    await Task.Run(() => { dahPlayer.PlaySync(); }, pauseToken);
+                                    break;
+                            }
+                            // Morse code timing says to leave the duration of one dit
+                            // between dits and dahs.
+                            symbolTime += activeSettings.DitDuration;
+                            await Task.Delay(activeSettings.DitDuration, pauseToken);
                         }
-                        // Morse code timing says to leave the duration of one dit
-                        // between dits and dahs.
-                        symbolTime += activeSettings.DitDuration;
-                        await Task.Delay(activeSettings.DitDuration);
+                    }
+                    else
+                    {
+                        // Symbol not recognized.
+                        // Skip.
+                    }
+
+                    if (symbolTime < activeSettings.SymbolInterval && nextTextIndex < Text.Length - 1)
+                    {
+                        await Task.Delay(activeSettings.SymbolInterval - symbolTime, pauseToken);
                     }
                 }
-                else
-                {
-                    // Symbol not recognized.
-                    // Skip.
-                }
-
-                if(symbolTime < activeSettings.SymbolInterval && i < Text.Length - 1)
-                {
-                    await Task.Delay(activeSettings.SymbolInterval - symbolTime);
-                }
+                CurState = State.STOPPED;
             }
-            OnFinishedPlaying?.Invoke();
+            catch (TaskCanceledException)
+            {
+                CurState = State.PAUSED;
+            }
         }
 
         public enum MorseElement

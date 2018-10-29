@@ -27,23 +27,41 @@ namespace ZenPlayer
             InitializeComponent();
             ButtonPlay.IsEnabled = false;
             player.LoadFiles(Player.AvailableSettings[0]);
-            player.OnFinishedPlaying += Player_OnFinishedPlaying;
+            player.OnStateChanged += Player_OnStateChanged;
             ButtonPause.IsEnabled = false;
             ButtonStop.IsEnabled = false;
             ButtonPlay.IsEnabled = true;
             TextToPlay.IsEnabled = true;
         }
 
-        private void Player_OnFinishedPlaying()
+        private void Player_OnStateChanged(Player.State newState)
         {
             // Perform on GUI thread
             Dispatcher.BeginInvoke(
                new Action(() =>
                {
-                   ButtonPause.IsEnabled = false;
-                   ButtonStop.IsEnabled = false;
-                   ButtonPlay.IsEnabled = true;
-                   TextToPlay.IsEnabled = true;
+                   switch (newState)
+                   {
+                       case Player.State.STOPPED:
+                           ButtonPause.IsEnabled = false;
+                           ButtonStop.IsEnabled = false;
+                           ButtonPlay.IsEnabled = true;
+                           TextToPlay.IsEnabled = true;
+                           break;
+                       case Player.State.PLAYING:
+                           ButtonPause.IsEnabled = true;
+                           ButtonStop.IsEnabled = true;
+                           ButtonPlay.IsEnabled = false;
+                           TextToPlay.IsEnabled = false;
+                           break;
+                       case Player.State.PAUSED:
+                           ButtonPause.IsEnabled = false;
+                           ButtonStop.IsEnabled = true;
+                           ButtonPlay.IsEnabled = true;
+                           TextToPlay.IsEnabled = false;
+                           break;
+                   }
+
                })
             );
         }
@@ -51,30 +69,17 @@ namespace ZenPlayer
         private void ButtonPlay_Click(object sender, RoutedEventArgs e)
         {
             player.Text = TextToPlay.Text;
-            ButtonPause.IsEnabled = true;
-            ButtonStop.IsEnabled = true;
-            ButtonPlay.IsEnabled = false;
-            TextToPlay.IsEnabled = false;
             player.Play();
         }
 
         private void ButtonPause_Click(object sender, RoutedEventArgs e)
         {
             player.Pause();
-
-            ButtonPause.IsEnabled = false;
-            ButtonStop.IsEnabled = true;
-            ButtonPlay.IsEnabled = true;
-            TextToPlay.IsEnabled = false;
         }
 
         private void ButtonStop_Click(object sender, RoutedEventArgs e)
         {
             player.Stop();
-            ButtonPause.IsEnabled = false;
-            ButtonStop.IsEnabled = false;
-            ButtonPlay.IsEnabled = true;
-            TextToPlay.IsEnabled = true;
         }
     }
 }
