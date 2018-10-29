@@ -25,11 +25,27 @@ namespace ZenPlayer
         public MainWindow()
         {
             InitializeComponent();
+            ButtonPlay.IsEnabled = false;
             player.LoadFiles(Player.AvailableSettings[0]);
+            player.OnFinishedPlaying += Player_OnFinishedPlaying;
             ButtonPause.IsEnabled = false;
             ButtonStop.IsEnabled = false;
             ButtonPlay.IsEnabled = true;
             TextToPlay.IsEnabled = true;
+        }
+
+        private void Player_OnFinishedPlaying()
+        {
+            // Perform on GUI thread
+            Dispatcher.BeginInvoke(
+               new Action(() =>
+               {
+                   ButtonPause.IsEnabled = false;
+                   ButtonStop.IsEnabled = false;
+                   ButtonPlay.IsEnabled = true;
+                   TextToPlay.IsEnabled = true;
+               })
+            );
         }
 
         private void ButtonPlay_Click(object sender, RoutedEventArgs e)

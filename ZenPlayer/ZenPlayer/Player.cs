@@ -8,6 +8,9 @@ namespace ZenPlayer
 {
     class Player
     {
+        public delegate void Handler();
+        public event Handler OnFinishedPlaying;
+
         /// <summary>
         /// A collection of all the settings required for playback.
         /// Yes, I know public member data is generally considered bad practice.
@@ -139,12 +142,12 @@ namespace ZenPlayer
                     // Skip.
                 }
 
-                if(symbolTime < activeSettings.SymbolInterval)
+                if(symbolTime < activeSettings.SymbolInterval && i < Text.Length - 1)
                 {
                     await Task.Delay(activeSettings.SymbolInterval - symbolTime);
                 }
             }
-            
+            OnFinishedPlaying?.Invoke();
         }
 
         public enum MorseElement
