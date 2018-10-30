@@ -12,6 +12,7 @@ namespace ZenPlayer
         public delegate void StateChanged(State newState);
         public event StateChanged OnStateChanged;
         public delegate void ProgressChanged(double fracCompleted);
+        public event ProgressChanged OnProgress;
 
         public enum State
         {
@@ -33,6 +34,9 @@ namespace ZenPlayer
                 OnStateChanged?.Invoke(curState);
             }
         }
+        // When the GUI calls Play() or Stop(), we cancel audio play, which happens slightly later.
+        // This variable stores whether the intent is to pause or stop.
+        private State nextState = State.STOPPED;
 
         /// <summary>
         /// A collection of all the settings required for playback.
@@ -107,29 +111,40 @@ namespace ZenPlayer
 
         public void Play()
         {
+            nextState = State.STOPPED;
             ambientPlayer?.Play();
             pauseTokenSource = new CancellationTokenSource();
             pauseToken = pauseTokenSource.Token;
             Task task = Task.Run((Action)PlayMorseCode);
         }
 
-        public void Stop()
+        /// <summary>
+        /// Common parts of pause and stop
+        /// </summary>
+        private void CeasePlaying()
         {
-            Pause();
-            // Reset state
-            nextTextIndex = 0;
-            CurState = State.STOPPED;
-        }
-
-        public void Pause()
-        {
-            if(CurState == State.PLAYING)
+            if (CurState == State.PLAYING)
             {
                 pauseTokenSource.Cancel();
             }
             ditPlayer?.Stop();
             dahPlayer?.Stop();
             ambientPlayer?.Stop();
+        }
+
+        public void Stop()
+        {
+            nextState = State.STOPPED;
+            CeasePlaying();
+            // Reset state
+            nextTextIndex = 0;
+            OnProgress?.Invoke(0);
+        }
+
+        public void Pause()
+        {
+            nextState = State.PAUSED;
+            CeasePlaying();
         }
 
         /// <summary>
@@ -179,17 +194,17 @@ namespace ZenPlayer
                         // Symbol not recognized.
                         // Skip.
                     }
-
+                    OnProgress?.Invoke((double)nextTextIndex / Text.Length);
                     if (symbolTime < activeSettings.SymbolInterval && nextTextIndex < Text.Length - 1)
                     {
                         await Task.Delay(activeSettings.SymbolInterval - symbolTime, pauseToken);
                     }
                 }
-                CurState = State.STOPPED;
+                CurState = nextState;
             }
             catch (TaskCanceledException)
             {
-                CurState = State.PAUSED;
+                CurState = nextState;
             }
         }
 

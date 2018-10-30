@@ -28,12 +28,23 @@ namespace ZenPlayer
             ButtonPlay.IsEnabled = false;
             player.LoadFiles(Player.AvailableSettings[0]);
             player.OnStateChanged += Player_OnStateChanged;
+            player.OnProgress += Player_OnProgress;
             ButtonPause.IsEnabled = false;
             ButtonStop.IsEnabled = false;
             ButtonPlay.IsEnabled = true;
             TextToPlay.IsEnabled = true;
         }
 
+        private void Player_OnProgress(double fracCompleted)
+        {
+            // Perform on GUI thread
+            Dispatcher.BeginInvoke(
+               new Action(() =>
+               {
+                   ProgressPlayback.Value = fracCompleted * ProgressPlayback.Maximum;
+               })
+            );
+        }
         private void Player_OnStateChanged(Player.State newState)
         {
             // Perform on GUI thread
