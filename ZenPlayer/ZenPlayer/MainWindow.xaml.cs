@@ -44,13 +44,13 @@ namespace ZenPlayer
             SliderSymbolInterval.Maximum = SYMBOL_INTERVAL_MAX;
         }
 
-        private void Player_OnProgress(double fracCompleted)
+        private void Player_OnProgress(int nextLetterToPlay)
         {
             // Perform on GUI thread
             Dispatcher.BeginInvoke(
                new Action(() =>
                {
-                   ProgressPlayback.Value = fracCompleted * ProgressPlayback.Maximum;
+                   ProgressPlayback.Value = ((double)(nextLetterToPlay+1) / TextToPlay.Text.Length) * ProgressPlayback.Maximum;
                })
             );
         }

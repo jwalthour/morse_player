@@ -11,7 +11,7 @@ namespace ZenPlayer
     {
         public delegate void StateChanged(State newState);
         public event StateChanged OnStateChanged;
-        public delegate void ProgressChanged(double fracCompleted);
+        public delegate void ProgressChanged(int nextLetterToPlay);
         public event ProgressChanged OnProgress;
 
         public enum State
@@ -194,7 +194,7 @@ namespace ZenPlayer
                         // Symbol not recognized.
                         // Skip.
                     }
-                    OnProgress?.Invoke((double)nextTextIndex / Text.Length);
+                    OnProgress?.Invoke(nextTextIndex);
                     if (nextTextIndex < Text.Length - 1)
                     {
                         if (symbolTime < SymbolIntervalMs)
