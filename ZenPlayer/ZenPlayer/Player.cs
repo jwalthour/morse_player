@@ -11,6 +11,7 @@ namespace ZenPlayer
     {
         public delegate void StateChanged(State newState);
         public event StateChanged OnStateChanged;
+        public delegate void ProgressChanged(double fracCompleted);
 
         public enum State
         {
