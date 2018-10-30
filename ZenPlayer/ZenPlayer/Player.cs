@@ -147,6 +147,16 @@ namespace ZenPlayer
             CeasePlaying();
         }
 
+        public MorseElement[] GetSymbolForLetter(char c)
+        {
+            c = Char.ToUpper(c);
+            if (symbols.ContainsKey(c)) {
+                return symbols[c];
+            } else {
+                return null;
+            }
+        }
+
         /// <summary>
         /// This is the core player function.
         /// It will run until cancelled, or it reaches the end of the text.
@@ -158,18 +168,17 @@ namespace ZenPlayer
             {
                 for (; nextTextIndex < Text.Length && !pauseToken.IsCancellationRequested; ++nextTextIndex)
                 {
-                    char c = Char.ToUpper(Text[nextTextIndex]);
+                    MorseElement[] seq = GetSymbolForLetter(Text[nextTextIndex]);
                     int symbolTime = 0;
-                    if (c == ' ')
+                    if (Text[nextTextIndex] == ' ')
                     {
                         // Strict morse code timing says a space is a silent Dah,
                         // which is the duration of 3 dits.
                         symbolTime = activeSettings.DitDuration * 3;
                         await Task.Delay(symbolTime, pauseToken);
                     }
-                    else if (symbols.ContainsKey(c))
+                    else if (seq != null)
                     {
-                        MorseElement[] seq = symbols[c];
                         foreach (MorseElement el in seq)
                         {
                             switch (el)

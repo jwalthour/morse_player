@@ -25,6 +25,8 @@ namespace ZenPlayer
         private const int SYMBOL_INTERVAL_MIN = 0;
         private const int SYMBOL_INTERVAL_MAX = 3000;
 
+        private const int LETTERS_EITHER_SIDE = 20;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -42,6 +44,8 @@ namespace ZenPlayer
 
             SliderSymbolInterval.Minimum = SYMBOL_INTERVAL_MIN;
             SliderSymbolInterval.Maximum = SYMBOL_INTERVAL_MAX;
+
+            ClearPlayingText();
         }
 
         private void Player_OnProgress(int nextLetterToPlay)
@@ -51,9 +55,42 @@ namespace ZenPlayer
                new Action(() =>
                {
                    ProgressPlayback.Value = ((double)(nextLetterToPlay+1) / TextToPlay.Text.Length) * ProgressPlayback.Maximum;
+
+                   UpdatePlayingText(nextLetterToPlay);
                })
             );
         }
+
+        /// <summary>
+        /// Clear the text areas displaying the currently-playing character
+        /// </summary>
+        private void ClearPlayingText()
+        {
+            TextBlockPastText.Text = "";
+            TextBlockFutureText.Text = "";
+            TextBlockCurLetter.Text = "";
+            TextBlockCurSymbol.Text = "";
+        }
+
+        /// <summary>
+        /// Update the text for the next playing char
+        /// </summary>
+        /// <param name="i">Index into TextToPlay.Text for the next letter to play</param>
+        private void UpdatePlayingText(int i)
+        {
+            if (i > 0) {
+                TextBlockPastText.Text = TextToPlay.Text.Substring(Math.Max(0, i - LETTERS_EITHER_SIDE), Math.Min(LETTERS_EITHER_SIDE, TextToPlay.Text.Length - i - 1));
+            } else {
+                TextBlockPastText.Text = "";
+            }
+            TextBlockCurLetter.Text = TextToPlay.Text.Substring(i, 1);
+            if (i < TextToPlay.Text.Length - 1) {
+                TextBlockFutureText.Text = TextToPlay.Text.Substring(i + 1, Math.Min(LETTERS_EITHER_SIDE, TextToPlay.Text.Length - i - 1));
+            } else {
+                TextBlockFutureText.Text = "";
+            }
+        }
+
         private void Player_OnStateChanged(Player.State newState)
         {
             // Perform on GUI thread
@@ -67,6 +104,7 @@ namespace ZenPlayer
                            ButtonStop.IsEnabled = false;
                            ButtonPlay.IsEnabled = true;
                            TextToPlay.IsEnabled = true;
+                           ClearPlayingText();
                            break;
                        case Player.State.PLAYING:
                            ButtonPause.IsEnabled = true;
