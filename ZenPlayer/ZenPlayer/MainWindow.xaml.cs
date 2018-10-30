@@ -22,18 +22,38 @@ namespace ZenPlayer
     {
         Player player = new Player();
 
+        private const int SYMBOL_INTERVAL_MIN = 0;
+        private const int SYMBOL_INTERVAL_MAX = 3000;
+
         public MainWindow()
         {
             InitializeComponent();
             ButtonPlay.IsEnabled = false;
             player.LoadFiles(Player.AvailableSettings[0]);
             player.OnStateChanged += Player_OnStateChanged;
+            player.OnProgress += Player_OnProgress;
             ButtonPause.IsEnabled = false;
             ButtonStop.IsEnabled = false;
             ButtonPlay.IsEnabled = true;
             TextToPlay.IsEnabled = true;
+
+            LabelSymbolIntervalMin.Content = SYMBOL_INTERVAL_MIN.ToString();
+            LabelSymbolIntervalMax.Content = SYMBOL_INTERVAL_MAX.ToString();
+
+            SliderSymbolInterval.Minimum = SYMBOL_INTERVAL_MIN;
+            SliderSymbolInterval.Maximum = SYMBOL_INTERVAL_MAX;
         }
 
+        private void Player_OnProgress(double fracCompleted)
+        {
+            // Perform on GUI thread
+            Dispatcher.BeginInvoke(
+               new Action(() =>
+               {
+                   ProgressPlayback.Value = fracCompleted * ProgressPlayback.Maximum;
+               })
+            );
+        }
         private void Player_OnStateChanged(Player.State newState)
         {
             // Perform on GUI thread
@@ -80,6 +100,11 @@ namespace ZenPlayer
         private void ButtonStop_Click(object sender, RoutedEventArgs e)
         {
             player.Stop();
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            player.SymbolIntervalMs = (int)(e.NewValue);
         }
     }
 }

@@ -11,6 +11,8 @@ namespace ZenPlayer
     {
         public delegate void StateChanged(State newState);
         public event StateChanged OnStateChanged;
+        public delegate void ProgressChanged(double fracCompleted);
+        public event ProgressChanged OnProgress;
 
         public enum State
         {
@@ -18,6 +20,8 @@ namespace ZenPlayer
             PLAYING,
             PAUSED,
         };
+
+        public int SymbolIntervalMs { get; set; }
 
         private State curState;
         public State CurState
@@ -32,6 +36,9 @@ namespace ZenPlayer
                 OnStateChanged?.Invoke(curState);
             }
         }
+        // When the GUI calls Play() or Stop(), we cancel audio play, which happens slightly later.
+        // This variable stores whether the intent is to pause or stop.
+        private State nextState = State.STOPPED;
 
         /// <summary>
         /// A collection of all the settings required for playback.
@@ -48,7 +55,6 @@ namespace ZenPlayer
             public int DitDuration;
             public int DahDuration;
             public int AmbientDuration;
-            public int SymbolInterval;
         }
 
         private Settings activeSettings;
@@ -67,7 +73,6 @@ namespace ZenPlayer
                 AmbientResourceName = "",
                 DitDuration = 67,
                 DahDuration = 202,
-                SymbolInterval = 2000,
                 AmbientDuration = 0,
             }
         };
@@ -106,29 +111,40 @@ namespace ZenPlayer
 
         public void Play()
         {
+            nextState = State.STOPPED;
             ambientPlayer?.Play();
             pauseTokenSource = new CancellationTokenSource();
             pauseToken = pauseTokenSource.Token;
             Task task = Task.Run((Action)PlayMorseCode);
         }
 
-        public void Stop()
+        /// <summary>
+        /// Common parts of pause and stop
+        /// </summary>
+        private void CeasePlaying()
         {
-            Pause();
-            // Reset state
-            nextTextIndex = 0;
-            CurState = State.STOPPED;
-        }
-
-        public void Pause()
-        {
-            if(CurState == State.PLAYING)
+            if (CurState == State.PLAYING)
             {
                 pauseTokenSource.Cancel();
             }
             ditPlayer?.Stop();
             dahPlayer?.Stop();
             ambientPlayer?.Stop();
+        }
+
+        public void Stop()
+        {
+            nextState = State.STOPPED;
+            CeasePlaying();
+            // Reset state
+            nextTextIndex = 0;
+            OnProgress?.Invoke(0);
+        }
+
+        public void Pause()
+        {
+            nextState = State.PAUSED;
+            CeasePlaying();
         }
 
         /// <summary>
@@ -178,17 +194,24 @@ namespace ZenPlayer
                         // Symbol not recognized.
                         // Skip.
                     }
-
-                    if (symbolTime < activeSettings.SymbolInterval && nextTextIndex < Text.Length - 1)
+                    OnProgress?.Invoke((double)nextTextIndex / Text.Length);
+                    if (nextTextIndex < Text.Length - 1)
                     {
-                        await Task.Delay(activeSettings.SymbolInterval - symbolTime, pauseToken);
+                        if (symbolTime < SymbolIntervalMs)
+                        {
+                            await Task.Delay(SymbolIntervalMs - symbolTime, pauseToken);
+                        }
+                        else
+                        {
+                            await Task.Delay(3 * activeSettings.DitDuration);
+                        }
                     }
                 }
-                CurState = State.STOPPED;
+                CurState = nextState;
             }
             catch (TaskCanceledException)
             {
-                CurState = State.PAUSED;
+                CurState = nextState;
             }
         }
 
