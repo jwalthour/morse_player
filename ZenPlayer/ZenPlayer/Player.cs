@@ -21,6 +21,8 @@ namespace ZenPlayer
             PAUSED,
         };
 
+        public int SymbolIntervalMs { get; set; }
+
         private State curState;
         public State CurState
         {
@@ -53,7 +55,6 @@ namespace ZenPlayer
             public int DitDuration;
             public int DahDuration;
             public int AmbientDuration;
-            public int SymbolInterval;
         }
 
         private Settings activeSettings;
@@ -72,7 +73,6 @@ namespace ZenPlayer
                 AmbientResourceName = "",
                 DitDuration = 67,
                 DahDuration = 202,
-                SymbolInterval = 2000,
                 AmbientDuration = 0,
             }
         };
@@ -195,9 +195,16 @@ namespace ZenPlayer
                         // Skip.
                     }
                     OnProgress?.Invoke((double)nextTextIndex / Text.Length);
-                    if (symbolTime < activeSettings.SymbolInterval && nextTextIndex < Text.Length - 1)
+                    if (nextTextIndex < Text.Length - 1)
                     {
-                        await Task.Delay(activeSettings.SymbolInterval - symbolTime, pauseToken);
+                        if (symbolTime < SymbolIntervalMs)
+                        {
+                            await Task.Delay(SymbolIntervalMs - symbolTime, pauseToken);
+                        }
+                        else
+                        {
+                            await Task.Delay(3 * activeSettings.DitDuration);
+                        }
                     }
                 }
                 CurState = nextState;
