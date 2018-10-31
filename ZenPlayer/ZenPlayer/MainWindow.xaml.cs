@@ -39,8 +39,8 @@ namespace ZenPlayer
             ButtonPlay.IsEnabled = true;
             TextToPlay.IsEnabled = true;
 
-            LabelSymbolIntervalMin.Content = SYMBOL_INTERVAL_MIN.ToString();
-            LabelSymbolIntervalMax.Content = SYMBOL_INTERVAL_MAX.ToString();
+            //LabelSymbolIntervalMin.Content = SYMBOL_INTERVAL_MIN.ToString();
+            //LabelSymbolIntervalMax.Content = SYMBOL_INTERVAL_MAX.ToString();
 
             SliderSymbolInterval.Minimum = SYMBOL_INTERVAL_MIN;
             SliderSymbolInterval.Maximum = SYMBOL_INTERVAL_MAX;
@@ -83,7 +83,13 @@ namespace ZenPlayer
             } else {
                 TextBlockPastText.Text = "";
             }
-            TextBlockCurLetter.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(i, 1);
+            if (i + 1 < TextToPlay.Text.Length)
+            {
+                TextBlockCurLetter.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(i, 1);
+            } else
+            {
+                TextBlockCurLetter.Text = "";
+            }
             if (i < TextToPlay.Text.Length - 1) {
                 TextBlockFutureText.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(i + 1, Math.Min(LETTERS_EITHER_SIDE, TextToPlay.Text.Length - i - 1));
             }
@@ -91,21 +97,23 @@ namespace ZenPlayer
                 TextBlockFutureText.Text = "";
             }
 
-            Player.MorseElement[] symbol = player.GetSymbolForLetter(TextBlockCurLetter.Text[0]);
-            if(symbol == null)
+            if (TextBlockCurLetter.Text.Length > 0)
             {
-                TextBlockCurSymbol.Text = "";
-            }
-            else
-            {
-                string symStr = " ";
-                foreach(Player.MorseElement el in symbol)
+                Player.MorseElement[] symbol = player.GetSymbolForLetter(TextBlockCurLetter.Text[0]);
+                if (symbol == null)
                 {
-                    symStr += (el == Player.MorseElement.DIT) ? "• " : "– ";
+                    TextBlockCurSymbol.Text = "";
                 }
-                TextBlockCurSymbol.Text = symStr;
+                else
+                {
+                    string symStr = " ";
+                    foreach (Player.MorseElement el in symbol)
+                    {
+                        symStr += (el == Player.MorseElement.DIT) ? "• " : "– ";
+                    }
+                    TextBlockCurSymbol.Text = symStr;
+                }
             }
-
         }
 
         private void Player_OnStateChanged(Player.State newState)
@@ -160,6 +168,11 @@ namespace ZenPlayer
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             player.SymbolIntervalMs = (int)(e.NewValue);
+        }
+
+        private void CheckBoxLoop_Checked(object sender, RoutedEventArgs e)
+        {
+            player.Loop = (bool)(CheckBoxLoop.IsChecked);
         }
     }
 }
