@@ -10,5 +10,7 @@ A player of morse code.
 
 To report a bug, click the "Issues" tab, and click "New issue".
 
-![Screenshot of Zen Player](https://github.com/jwalthour/morse_player/blob/master/screenshot_initial.png)
+![Screenshot of Zen Player on startup](https://github.com/jwalthour/morse_player/blob/master/screenshot_initial.png)
+
+![Screenshot of Zen Player on startup](https://github.com/jwalthour/morse_player/blob/master/screenshot_playing.png)
 
