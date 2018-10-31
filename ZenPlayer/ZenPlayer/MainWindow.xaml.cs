@@ -31,7 +31,7 @@ namespace ZenPlayer
         {
             InitializeComponent();
             ButtonPlay.IsEnabled = false;
-            player.LoadFiles(Player.AvailableSettings[0]);
+            player.LoadDitDahFiles(Player.AvailableSettings[0]);
             player.OnStateChanged += Player_OnStateChanged;
             player.OnProgress += Player_OnProgress;
             ButtonPause.IsEnabled = false;

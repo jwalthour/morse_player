@@ -167,5 +167,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ZenAudio\dah_300ms_440hz_tone.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_100ms_440hz_tone.wav" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
