@@ -25,6 +25,8 @@ namespace ZenPlayer
         private const int SYMBOL_INTERVAL_MIN = 0;
         private const int SYMBOL_INTERVAL_MAX = 3000;
 
+        private const int LETTERS_EITHER_SIDE = 50;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -37,23 +39,83 @@ namespace ZenPlayer
             ButtonPlay.IsEnabled = true;
             TextToPlay.IsEnabled = true;
 
-            LabelSymbolIntervalMin.Content = SYMBOL_INTERVAL_MIN.ToString();
-            LabelSymbolIntervalMax.Content = SYMBOL_INTERVAL_MAX.ToString();
+            //LabelSymbolIntervalMin.Content = SYMBOL_INTERVAL_MIN.ToString();
+            //LabelSymbolIntervalMax.Content = SYMBOL_INTERVAL_MAX.ToString();
 
             SliderSymbolInterval.Minimum = SYMBOL_INTERVAL_MIN;
             SliderSymbolInterval.Maximum = SYMBOL_INTERVAL_MAX;
+
+            ClearPlayingText();
         }
 
-        private void Player_OnProgress(double fracCompleted)
+        private void Player_OnProgress(int nextLetterToPlay)
         {
             // Perform on GUI thread
             Dispatcher.BeginInvoke(
                new Action(() =>
                {
-                   ProgressPlayback.Value = fracCompleted * ProgressPlayback.Maximum;
+                   ProgressPlayback.Value = ((double)(nextLetterToPlay) / TextToPlay.Text.Length) * ProgressPlayback.Maximum;
+
+                   UpdatePlayingText(nextLetterToPlay);
                })
             );
         }
+
+        /// <summary>
+        /// Clear the text areas displaying the currently-playing character
+        /// </summary>
+        private void ClearPlayingText()
+        {
+            TextBlockPastText.Text = "";
+            TextBlockFutureText.Text = "";
+            TextBlockCurLetter.Text = "";
+            TextBlockCurSymbol.Text = "";
+        }
+
+        /// <summary>
+        /// Update the text for the next playing char
+        /// </summary>
+        /// <param name="i">Index into TextToPlay.Text for the next letter to play</param>
+        private void UpdatePlayingText(int i)
+        {
+            if (i > 0) {
+                TextBlockPastText.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(Math.Max(0, i - LETTERS_EITHER_SIDE), Math.Min(i, LETTERS_EITHER_SIDE));
+            } else {
+                TextBlockPastText.Text = "";
+            }
+            if (i + 1 < TextToPlay.Text.Length)
+            {
+                TextBlockCurLetter.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(i, 1);
+            } else
+            {
+                TextBlockCurLetter.Text = "";
+            }
+            if (i < TextToPlay.Text.Length - 1) {
+                TextBlockFutureText.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(i + 1, Math.Min(LETTERS_EITHER_SIDE, TextToPlay.Text.Length - i - 1));
+            }
+            else {
+                TextBlockFutureText.Text = "";
+            }
+
+            if (TextBlockCurLetter.Text.Length > 0)
+            {
+                Player.MorseElement[] symbol = player.GetSymbolForLetter(TextBlockCurLetter.Text[0]);
+                if (symbol == null)
+                {
+                    TextBlockCurSymbol.Text = "";
+                }
+                else
+                {
+                    string symStr = " ";
+                    foreach (Player.MorseElement el in symbol)
+                    {
+                        symStr += (el == Player.MorseElement.DIT) ? "• " : "– ";
+                    }
+                    TextBlockCurSymbol.Text = symStr;
+                }
+            }
+        }
+
         private void Player_OnStateChanged(Player.State newState)
         {
             // Perform on GUI thread
@@ -67,6 +129,7 @@ namespace ZenPlayer
                            ButtonStop.IsEnabled = false;
                            ButtonPlay.IsEnabled = true;
                            TextToPlay.IsEnabled = true;
+                           ClearPlayingText();
                            break;
                        case Player.State.PLAYING:
                            ButtonPause.IsEnabled = true;
@@ -105,6 +168,11 @@ namespace ZenPlayer
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             player.SymbolIntervalMs = (int)(e.NewValue);
+        }
+
+        private void CheckBoxLoop_Checked(object sender, RoutedEventArgs e)
+        {
+            player.Loop = (bool)(CheckBoxLoop.IsChecked);
         }
     }
 }

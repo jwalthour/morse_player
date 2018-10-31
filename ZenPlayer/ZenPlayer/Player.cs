@@ -11,7 +11,7 @@ namespace ZenPlayer
     {
         public delegate void StateChanged(State newState);
         public event StateChanged OnStateChanged;
-        public delegate void ProgressChanged(double fracCompleted);
+        public delegate void ProgressChanged(int nextLetterToPlay);
         public event ProgressChanged OnProgress;
 
         public enum State
@@ -21,7 +21,9 @@ namespace ZenPlayer
             PAUSED,
         };
 
+        // Settings
         public int SymbolIntervalMs { get; set; }
+        public bool Loop { get; set; }
 
         private State curState;
         public State CurState
@@ -147,6 +149,16 @@ namespace ZenPlayer
             CeasePlaying();
         }
 
+        public MorseElement[] GetSymbolForLetter(char c)
+        {
+            c = Char.ToUpper(c);
+            if (symbols.ContainsKey(c)) {
+                return symbols[c];
+            } else {
+                return null;
+            }
+        }
+
         /// <summary>
         /// This is the core player function.
         /// It will run until cancelled, or it reaches the end of the text.
@@ -156,57 +168,60 @@ namespace ZenPlayer
             CurState = State.PLAYING;
             try
             {
-                for (; nextTextIndex < Text.Length && !pauseToken.IsCancellationRequested; ++nextTextIndex)
+                do
                 {
-                    char c = Char.ToUpper(Text[nextTextIndex]);
-                    int symbolTime = 0;
-                    if (c == ' ')
+                    for (; nextTextIndex < Text.Length && !pauseToken.IsCancellationRequested; ++nextTextIndex)
                     {
-                        // Strict morse code timing says a space is a silent Dah,
-                        // which is the duration of 3 dits.
-                        symbolTime = activeSettings.DitDuration * 3;
-                        await Task.Delay(symbolTime, pauseToken);
-                    }
-                    else if (symbols.ContainsKey(c))
-                    {
-                        MorseElement[] seq = symbols[c];
-                        foreach (MorseElement el in seq)
+                        MorseElement[] seq = GetSymbolForLetter(Text[nextTextIndex]);
+                        int symbolTime = 0;
+                        if (Text[nextTextIndex] == ' ')
                         {
-                            switch (el)
-                            {
-                                case MorseElement.DIT:
-                                    symbolTime += activeSettings.DitDuration;
-                                    await Task.Run(() => { ditPlayer.PlaySync(); }, pauseToken);
-                                    break;
-                                case MorseElement.DAH:
-                                    symbolTime += activeSettings.DahDuration;
-                                    await Task.Run(() => { dahPlayer.PlaySync(); }, pauseToken);
-                                    break;
-                            }
-                            // Morse code timing says to leave the duration of one dit
-                            // between dits and dahs.
-                            symbolTime += activeSettings.DitDuration;
-                            await Task.Delay(activeSettings.DitDuration, pauseToken);
+                            // Strict morse code timing says a space is a silent Dah,
+                            // which is the duration of 3 dits.
+                            symbolTime = activeSettings.DitDuration * 3;
+                            await Task.Delay(symbolTime, pauseToken);
                         }
-                    }
-                    else
-                    {
-                        // Symbol not recognized.
-                        // Skip.
-                    }
-                    OnProgress?.Invoke((double)nextTextIndex / Text.Length);
-                    if (nextTextIndex < Text.Length - 1)
-                    {
-                        if (symbolTime < SymbolIntervalMs)
+                        else if (seq != null)
                         {
-                            await Task.Delay(SymbolIntervalMs - symbolTime, pauseToken);
+                            foreach (MorseElement el in seq)
+                            {
+                                switch (el)
+                                {
+                                    case MorseElement.DIT:
+                                        symbolTime += activeSettings.DitDuration;
+                                        await Task.Run(() => { ditPlayer.PlaySync(); }, pauseToken);
+                                        break;
+                                    case MorseElement.DAH:
+                                        symbolTime += activeSettings.DahDuration;
+                                        await Task.Run(() => { dahPlayer.PlaySync(); }, pauseToken);
+                                        break;
+                                }
+                                // Morse code timing says to leave the duration of one dit
+                                // between dits and dahs.
+                                symbolTime += activeSettings.DitDuration;
+                                await Task.Delay(activeSettings.DitDuration, pauseToken);
+                            }
                         }
                         else
                         {
-                            await Task.Delay(3 * activeSettings.DitDuration);
+                            // Symbol not recognized.
+                            // Skip.
+                        }
+                        OnProgress?.Invoke(nextTextIndex + 1);
+                        if (nextTextIndex < Text.Length - 1)
+                        {
+                            if (symbolTime < SymbolIntervalMs)
+                            {
+                                await Task.Delay(SymbolIntervalMs - symbolTime, pauseToken);
+                            }
+                            else
+                            {
+                                await Task.Delay(3 * activeSettings.DitDuration);
+                            }
                         }
                     }
-                }
+                    nextTextIndex = 0;
+                } while (Loop);
                 CurState = nextState;
             }
             catch (TaskCanceledException)

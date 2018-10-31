@@ -10,13 +10,17 @@
         <Button x:Name="ButtonPlay" Content="4" Margin="10,10,0,0" VerticalAlignment="Top" Click="ButtonPlay_Click" FontFamily="Webdings" FontSize="20" Height="40" HorizontalAlignment="Left" Width="40"/>
         <Button x:Name="ButtonPause" Content=";" HorizontalAlignment="Left" Margin="55,10,0,0" VerticalAlignment="Top" Width="40" FontFamily="Webdings" FontSize="20" Height="40" Click="ButtonPause_Click"/>
         <Button x:Name="ButtonStop" Content="&lt;" Margin="100,10,0,0" VerticalAlignment="Top" FontFamily="Webdings" FontSize="20" Height="40" Click="ButtonStop_Click" HorizontalAlignment="Left" Width="40"/>
-        <TextBox x:Name="TextToPlay" Margin="10,70,9.6,10" TextWrapping="Wrap" AcceptsReturn="True" Text="Enter text here to playback."/>
+        <TextBox x:Name="TextToPlay" Margin="10,111,9.6,10" TextWrapping="Wrap" AcceptsReturn="True" Text="Enter text here to playback."/>
         <Label Content="https://github.com/jwalthour/morse__player" HorizontalAlignment="Right" Margin="0,18,9.6,0" VerticalAlignment="Top" Opacity="0.5" Width="246"/>
         <ProgressBar x:Name="ProgressPlayback" Height="10" Margin="10,55,10,0" VerticalAlignment="Top"/>
-        <Label Content="Symbol interval (ms)" HorizontalAlignment="Left" Margin="164,24,0,0" VerticalAlignment="Top" Width="130"/>
-        <Slider x:Name="SliderSymbolInterval" HorizontalAlignment="Left" Margin="166,6,0,0" VerticalAlignment="Top" Width="109" ValueChanged="Slider_ValueChanged" Maximum="3000" Value="2000"/>
-        <Label x:Name="LabelSymbolIntervalMin" Content="0" HorizontalAlignment="Left" Margin="148,3,0,0" VerticalAlignment="Top" RenderTransformOrigin="-12.012,-0.164"/>
-        <Label x:Name="LabelSymbolIntervalMax" Content="3000" HorizontalAlignment="Left" Margin="280,3,0,0" VerticalAlignment="Top" RenderTransformOrigin="-12.012,-0.164"/>
+        <Slider x:Name="SliderSymbolInterval" HorizontalAlignment="Left" Margin="183,23,0,0" VerticalAlignment="Top" Width="109" ValueChanged="Slider_ValueChanged" Maximum="3000" Value="2000"/>
+        <Label x:Name="LabelSymbolIntervalMin" Content="Fast" HorizontalAlignment="Left" Margin="148,18,0,0" VerticalAlignment="Top" RenderTransformOrigin="-12.012,-0.164"/>
+        <Label x:Name="LabelSymbolIntervalMax" Content="Slow" HorizontalAlignment="Left" Margin="292,18,0,0" VerticalAlignment="Top" RenderTransformOrigin="-12.012,-0.164"/>
+        <TextBlock x:Name="TextBlockPastText" HorizontalAlignment="Left" Margin="10,74,0,0" TextWrapping="NoWrap" Text="...past text" VerticalAlignment="Top" Width="373" TextAlignment="Right"/>
+        <TextBlock x:Name="TextBlockCurLetter" HorizontalAlignment="Left" Margin="383,68,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" FontSize="18" Width="15" TextAlignment="Center"/>
+        <TextBlock x:Name="TextBlockFutureText" HorizontalAlignment="Left" Margin="398,74,0,0" TextWrapping="NoWrap" Text="future text..." VerticalAlignment="Top" Width="384" TextAlignment="Left"/>
+        <TextBlock x:Name="TextBlockCurSymbol" HorizontalAlignment="Left" Margin="330,87,0,0" TextWrapping="Wrap" Text="–••–" VerticalAlignment="Top" FontSize="18" Width="121" TextAlignment="Center" Height="24"/>
+        <CheckBox x:Name="CheckBoxLoop" Content="Loop" HorizontalAlignment="Left" Margin="366,23,0,0" VerticalAlignment="Top" Checked="CheckBoxLoop_Checked"/>
 
     </Grid>
 </Window>
