@@ -20,7 +20,7 @@
         <TextBlock x:Name="TextBlockPastText" HorizontalAlignment="Left" Margin="10,74,0,0" TextWrapping="NoWrap" Text="...past text" VerticalAlignment="Top" Width="373" TextAlignment="Right"/>
         <TextBlock x:Name="TextBlockCurLetter" HorizontalAlignment="Left" Margin="383,68,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" FontSize="18" Width="15" TextAlignment="Center"/>
         <TextBlock x:Name="TextBlockFutureText" HorizontalAlignment="Left" Margin="398,74,0,0" TextWrapping="NoWrap" Text="future text..." VerticalAlignment="Top" Width="384" TextAlignment="Left"/>
-        <TextBlock x:Name="TextBlockCurSymbol" HorizontalAlignment="Left" Margin="364,87,0,0" TextWrapping="Wrap" Text="–••–" VerticalAlignment="Top" FontSize="18" Width="53" TextAlignment="Center" Height="24"/>
+        <TextBlock x:Name="TextBlockCurSymbol" HorizontalAlignment="Left" Margin="330,87,0,0" TextWrapping="Wrap" Text="–••–" VerticalAlignment="Top" FontSize="18" Width="121" TextAlignment="Center" Height="24"/>
 
     </Grid>
 </Window>
