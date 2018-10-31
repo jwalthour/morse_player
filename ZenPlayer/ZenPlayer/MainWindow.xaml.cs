@@ -79,7 +79,7 @@ namespace ZenPlayer
         private void UpdatePlayingText(int i)
         {
             if (i > 0) {
-                TextBlockPastText.Text = TextToPlay.Text.Substring(Math.Max(0, i - LETTERS_EITHER_SIDE), Math.Min(LETTERS_EITHER_SIDE, TextToPlay.Text.Length - i - 1));
+                TextBlockPastText.Text = TextToPlay.Text.Substring(Math.Max(0, i - LETTERS_EITHER_SIDE), Math.Min(i, LETTERS_EITHER_SIDE));
             } else {
                 TextBlockPastText.Text = "";
             }
