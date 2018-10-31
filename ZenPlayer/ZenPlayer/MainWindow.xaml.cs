@@ -25,7 +25,7 @@ namespace ZenPlayer
         private const int SYMBOL_INTERVAL_MIN = 0;
         private const int SYMBOL_INTERVAL_MAX = 3000;
 
-        private const int LETTERS_EITHER_SIDE = 20;
+        private const int LETTERS_EITHER_SIDE = 50;
 
         public MainWindow()
         {
@@ -79,16 +79,33 @@ namespace ZenPlayer
         private void UpdatePlayingText(int i)
         {
             if (i > 0) {
-                TextBlockPastText.Text = TextToPlay.Text.Substring(Math.Max(0, i - LETTERS_EITHER_SIDE), Math.Min(i, LETTERS_EITHER_SIDE));
+                TextBlockPastText.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(Math.Max(0, i - LETTERS_EITHER_SIDE), Math.Min(i, LETTERS_EITHER_SIDE));
             } else {
                 TextBlockPastText.Text = "";
             }
-            TextBlockCurLetter.Text = TextToPlay.Text.Substring(i, 1);
+            TextBlockCurLetter.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(i, 1);
             if (i < TextToPlay.Text.Length - 1) {
-                TextBlockFutureText.Text = TextToPlay.Text.Substring(i + 1, Math.Min(LETTERS_EITHER_SIDE, TextToPlay.Text.Length - i - 1));
-            } else {
+                TextBlockFutureText.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(i + 1, Math.Min(LETTERS_EITHER_SIDE, TextToPlay.Text.Length - i - 1));
+            }
+            else {
                 TextBlockFutureText.Text = "";
             }
+
+            Player.MorseElement[] symbol = player.GetSymbolForLetter(TextBlockCurLetter.Text[0]);
+            if(symbol == null)
+            {
+                TextBlockCurSymbol.Text = "";
+            }
+            else
+            {
+                string symStr = " ";
+                foreach(Player.MorseElement el in symbol)
+                {
+                    symStr += (el == Player.MorseElement.DIT) ? "• " : "– ";
+                }
+                TextBlockCurSymbol.Text = symStr;
+            }
+
         }
 
         private void Player_OnStateChanged(Player.State newState)

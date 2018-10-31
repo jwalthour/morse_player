@@ -166,9 +166,6 @@ namespace ZenPlayer
             CurState = State.PLAYING;
             try
             {
-                // Short pause at the beginning.
-                // Note that this affects the progress offsets.
-                Text = " " + Text;
                 for (; nextTextIndex < Text.Length && !pauseToken.IsCancellationRequested; ++nextTextIndex)
                 {
                     MorseElement[] seq = GetSymbolForLetter(Text[nextTextIndex]);
@@ -206,7 +203,7 @@ namespace ZenPlayer
                         // Symbol not recognized.
                         // Skip.
                     }
-                    OnProgress?.Invoke(nextTextIndex);
+                    OnProgress?.Invoke(nextTextIndex + 1);
                     if (nextTextIndex < Text.Length - 1)
                     {
                         if (symbolTime < SymbolIntervalMs)
