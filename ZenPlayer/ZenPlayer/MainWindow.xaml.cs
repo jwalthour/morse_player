@@ -54,7 +54,7 @@ namespace ZenPlayer
             Dispatcher.BeginInvoke(
                new Action(() =>
                {
-                   ProgressPlayback.Value = ((double)(nextLetterToPlay+1) / TextToPlay.Text.Length) * ProgressPlayback.Maximum;
+                   ProgressPlayback.Value = ((double)(nextLetterToPlay) / TextToPlay.Text.Length) * ProgressPlayback.Maximum;
 
                    UpdatePlayingText(nextLetterToPlay);
                })
