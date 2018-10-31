@@ -48,32 +48,38 @@ namespace ZenPlayer
         /// Since this object has no such concept as invalid state, and merely
         /// serves as a collection of variables, I think it's OK to break dogma.
         /// </summary>
-        public struct Settings
+        public struct DitDahSettings
         {
             public string ConfigName;
             public string DitResourceName;
             public string DahResourceName;
             public int DitDuration;
             public int DahDuration;
+
+            public override string ToString()
+            {
+                return ConfigName;
+            }
+
         }
 
-        private Settings activeSettings;
+        private DitDahSettings activeSettings;
         private int nextTextIndex = 0;
 
         /// <summary>
         /// A list of the options that are valid to choose.
         /// Ideally these would be read from a config file or something.
         /// </summary>
-        public static readonly Settings[] AvailableSettings =
+        public static readonly DitDahSettings[] AvailableDitDahSettings =
         {
-            new Settings {
+            new DitDahSettings {
                 ConfigName          = "440Hz tones",
                 DitResourceName     = "ZenPlayer.ZenAudio.dit_100ms_440hz_tone.wav",
                 DahResourceName     = "ZenPlayer.ZenAudio.dah_300ms_440hz_tone.wav",
                 DitDuration = 100,
                 DahDuration = 300,
             },
-            new Settings {
+            new DitDahSettings {
                 ConfigName          = "Bell and wood",
                 DitResourceName     = "ZenPlayer.ZenAudio.dit0_67ms.wav",
                 DahResourceName     = "ZenPlayer.ZenAudio.dah_202ms.wav",
@@ -98,7 +104,7 @@ namespace ZenPlayer
         /// Prepares to play the given settings by loading them into memory.
         /// </summary>
         /// <param name="settings"></param>
-        public async void LoadDitDahFiles(Settings settings)
+        public async void LoadDitDahFiles(DitDahSettings settings)
         {
             activeSettings = settings;
             System.Reflection.Assembly a = System.Reflection.Assembly.GetExecutingAssembly();

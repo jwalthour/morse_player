@@ -31,7 +31,6 @@ namespace ZenPlayer
         {
             InitializeComponent();
             ButtonPlay.IsEnabled = false;
-            player.LoadDitDahFiles(Player.AvailableSettings[0]);
             player.OnStateChanged += Player_OnStateChanged;
             player.OnProgress += Player_OnProgress;
             ButtonPause.IsEnabled = false;
@@ -46,6 +45,17 @@ namespace ZenPlayer
             SliderSymbolInterval.Maximum = SYMBOL_INTERVAL_MAX;
 
             ClearPlayingText();
+
+            foreach(Player.DitDahSettings dds in Player.AvailableDitDahSettings) {
+                ComboBoxDitDahSel.Items.Add(dds);
+            }
+            ComboBoxDitDahSel.SelectionChanged += ComboBoxDitDahSel_SelectionChanged;
+            ComboBoxDitDahSel.SelectedIndex = 0;
+        }
+
+        private void ComboBoxDitDahSel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            player.LoadDitDahFiles((Player.DitDahSettings)ComboBoxDitDahSel.SelectedItem);
         }
 
         private void Player_OnProgress(int nextLetterToPlay)
@@ -130,6 +140,7 @@ namespace ZenPlayer
                            ButtonStop.IsEnabled = false;
                            ButtonPlay.IsEnabled = true;
                            TextToPlay.IsEnabled = true;
+                           ComboBoxDitDahSel.IsEnabled = true;
                            ClearPlayingText();
                            break;
                        case Player.State.PLAYING:
@@ -137,12 +148,14 @@ namespace ZenPlayer
                            ButtonStop.IsEnabled = true;
                            ButtonPlay.IsEnabled = false;
                            TextToPlay.IsEnabled = false;
+                           ComboBoxDitDahSel.IsEnabled = false;
                            break;
                        case Player.State.PAUSED:
                            ButtonPause.IsEnabled = false;
                            ButtonStop.IsEnabled = true;
                            ButtonPlay.IsEnabled = true;
                            TextToPlay.IsEnabled = false;
+                           ComboBoxDitDahSel.IsEnabled = false;
                            break;
                    }
 
