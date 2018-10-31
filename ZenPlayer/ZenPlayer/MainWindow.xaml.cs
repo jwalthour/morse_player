@@ -83,12 +83,13 @@ namespace ZenPlayer
             } else {
                 TextBlockPastText.Text = "";
             }
-            if (i + 1 < TextToPlay.Text.Length)
+            if (i < TextToPlay.Text.Length)
             {
                 TextBlockCurLetter.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(i, 1);
             } else
             {
                 TextBlockCurLetter.Text = "";
+                TextBlockCurSymbol.Text = "";
             }
             if (i < TextToPlay.Text.Length - 1) {
                 TextBlockFutureText.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(i + 1, Math.Min(LETTERS_EITHER_SIDE, TextToPlay.Text.Length - i - 1));
