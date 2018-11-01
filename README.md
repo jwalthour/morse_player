@@ -12,3 +12,12 @@ To report a bug, click the "Issues" tab, and click "New issue".
 
 ![Screenshot of Zen Player](https://github.com/jwalthour/morse_player/blob/master/screenshot_initial.png)
 
+# Attribution
+
+This work was made possible by contributions licensed under the Creative Commons Zero license, from the following contributors:
+
+## Freesound users:
+- [Jagadamba](https://freesound.org/people/Jagadamba/sounds/219159/)
+- [isteak](https://freesound.org/people/isteak/sounds/346328/)
+
+And by Wikimedia commons user [Kendrick Shaw](https://commons.wikimedia.org/wiki/File:Enso.svg).

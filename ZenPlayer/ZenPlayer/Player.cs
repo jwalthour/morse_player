@@ -63,7 +63,7 @@ namespace ZenPlayer
 
         }
 
-        private DitDahSettings activeSettings;
+        private DitDahSettings activeDitDahSettings;
         private int nextTextIndex = 0;
 
         /// <summary>
@@ -81,8 +81,8 @@ namespace ZenPlayer
             },
             new DitDahSettings {
                 ConfigName          = "Bell and wood",
-                DitResourceName     = "ZenPlayer.ZenAudio.dit0_67ms.wav",
-                DahResourceName     = "ZenPlayer.ZenAudio.dah_202ms.wav",
+                DitResourceName     = "ZenPlayer.ZenAudio.dit_67ms_wood_block.wav",
+                DahResourceName     = "ZenPlayer.ZenAudio.dah_202ms_bell.wav",
                 DitDuration = 67,
                 DahDuration = 202,
             }
@@ -106,10 +106,10 @@ namespace ZenPlayer
         /// <param name="settings"></param>
         public async void LoadDitDahFiles(DitDahSettings settings)
         {
-            activeSettings = settings;
+            activeDitDahSettings = settings;
             System.Reflection.Assembly a = System.Reflection.Assembly.GetExecutingAssembly();
-            System.IO.Stream ditStream = a.GetManifestResourceStream(activeSettings.DitResourceName);
-            System.IO.Stream dahStream = a.GetManifestResourceStream(activeSettings.DahResourceName);
+            System.IO.Stream ditStream = a.GetManifestResourceStream(activeDitDahSettings.DitResourceName);
+            System.IO.Stream dahStream = a.GetManifestResourceStream(activeDitDahSettings.DahResourceName);
             // TODO: do the same for ambient sounds
             ditPlayer = new System.Media.SoundPlayer(ditStream);
             dahPlayer = new System.Media.SoundPlayer(dahStream);
@@ -187,7 +187,7 @@ namespace ZenPlayer
                         {
                             // Strict morse code timing says a space is a silent Dah,
                             // which is the duration of 3 dits.
-                            symbolTime = activeSettings.DitDuration * 3;
+                            symbolTime = activeDitDahSettings.DitDuration * 3;
                             await Task.Delay(symbolTime, pauseToken);
                         }
                         else if (seq != null)
@@ -197,18 +197,18 @@ namespace ZenPlayer
                                 switch (el)
                                 {
                                     case MorseElement.DIT:
-                                        symbolTime += activeSettings.DitDuration;
+                                        symbolTime += activeDitDahSettings.DitDuration;
                                         await Task.Run(() => { ditPlayer.PlaySync(); }, pauseToken);
                                         break;
                                     case MorseElement.DAH:
-                                        symbolTime += activeSettings.DahDuration;
+                                        symbolTime += activeDitDahSettings.DahDuration;
                                         await Task.Run(() => { dahPlayer.PlaySync(); }, pauseToken);
                                         break;
                                 }
                                 // Morse code timing says to leave the duration of one dit
                                 // between dits and dahs.
-                                symbolTime += activeSettings.DitDuration;
-                                await Task.Delay(activeSettings.DitDuration, pauseToken);
+                                symbolTime += activeDitDahSettings.DitDuration;
+                                await Task.Delay(activeDitDahSettings.DitDuration, pauseToken);
                             }
                         }
                         else
@@ -225,7 +225,7 @@ namespace ZenPlayer
                             }
                             else
                             {
-                                await Task.Delay(3 * activeSettings.DitDuration);
+                                await Task.Delay(3 * activeDitDahSettings.DitDuration);
                             }
                         }
                     }
