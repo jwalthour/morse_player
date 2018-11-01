@@ -20,8 +20,8 @@
         <TextBlock x:Name="TextBlockCurLetter" HorizontalAlignment="Left" Margin="383,68,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" FontSize="18" Width="15" TextAlignment="Center"/>
         <TextBlock x:Name="TextBlockFutureText" HorizontalAlignment="Left" Margin="398,74,0,0" TextWrapping="NoWrap" Text="future text..." VerticalAlignment="Top" Width="384" TextAlignment="Left"/>
         <TextBlock x:Name="TextBlockCurSymbol" HorizontalAlignment="Left" Margin="330,87,0,0" TextWrapping="Wrap" Text="–••–" VerticalAlignment="Top" FontSize="18" Width="121" TextAlignment="Center" Height="24"/>
-        <CheckBox x:Name="CheckBoxLoop" Content="Loop playback" HorizontalAlignment="Left" Margin="151,35,0,0" VerticalAlignment="Top" Checked="CheckBoxLoop_Checked"/>
-        <ComboBox x:Name="ComboBoxDitDahSel" HorizontalAlignment="Left" Margin="316,10,0,0" VerticalAlignment="Top" Width="152"/>
+        <CheckBox x:Name="CheckBoxLoop" Content="Loop playback" HorizontalAlignment="Left" Margin="175,32,0,0" VerticalAlignment="Top" Checked="CheckBoxLoop_Checked" Width="101"/>
+        <ComboBox x:Name="ComboBoxDitDahSel" HorizontalAlignment="Left" Margin="316,21,0,0" VerticalAlignment="Top" Width="217"/>
 
     </Grid>
 </Window>

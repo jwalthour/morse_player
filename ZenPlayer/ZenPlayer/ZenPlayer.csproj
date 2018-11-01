@@ -141,16 +141,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ZenAudio\219159__jagadamba__frogblock03.wav" />
-    <EmbeddedResource Include="ZenAudio\219161__jagadamba__frogblock01.wav" />
-    <EmbeddedResource Include="ZenAudio\346328__isteak__bright-tibetan-bell-ding-b-note-cleaner.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="ZenAudio\trimmed_346328__isteak__bright-tibetan-bell-ding-b-note-cleaner.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="ZenAudio\dah_202ms.wav" />
-    <EmbeddedResource Include="ZenAudio\dit0_67ms.wav" />
+    <EmbeddedResource Include="ZenAudio\dah_202ms_bell.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_67ms_wood_block.wav" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Enso.ico" />

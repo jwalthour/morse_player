@@ -14,10 +14,23 @@ To report a bug, click the "Issues" tab, and click "New issue".
 
 # Attribution
 
-This work was made possible by contributions licensed under the Creative Commons Zero license, from the following contributors:
+This work was made possible by the following contributors:
 
-## Freesound users:
+## Creative Commons Zero license:
+
+The following works are used here, licensed under the [Creative Commons Zero License](https://creativecommons.org/publicdomain/zero/1.0/):
+
+### Freesound users:
+
 - [Jagadamba](https://freesound.org/people/Jagadamba/sounds/219159/)
 - [isteak](https://freesound.org/people/isteak/sounds/346328/)
 
 And by Wikimedia commons user [Kendrick Shaw](https://commons.wikimedia.org/wiki/File:Enso.svg).
+
+## Creative Commons Attribution license:
+
+The following works are used here, licensed under the [Creative Commons Attribution License](https://creativecommons.org/licenses/by/3.0/):
+
+### Freesound users:
+- [kfosse13](https://freesound.org/people/kfosse13/sounds/423689/)
+- [RHumphries](https://freesound.org/people/RHumphries/sounds/2523/)
