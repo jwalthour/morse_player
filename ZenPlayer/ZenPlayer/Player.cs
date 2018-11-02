@@ -55,6 +55,10 @@ namespace ZenPlayer
             public string DahResourceName;
             public int DitDuration;
             public int DahDuration;
+            /// <summary>Duration used as a pause between dits/dahs</summary>
+            public int SilentDitDuration;
+            /// <summary>Duration used as a pause between symbols</summary>
+            public int SilentDahDuration;
 
             public override string ToString()
             {
@@ -78,6 +82,17 @@ namespace ZenPlayer
                 DahResourceName     = "ZenPlayer.ZenAudio.dah_300ms_440hz_tone.wav",
                 DitDuration = 100,
                 DahDuration = 300,
+                SilentDitDuration = 100,
+                SilentDahDuration = 300,
+            },
+            new DitDahSettings {
+                ConfigName          = "Chickadee",
+                DitResourceName     = "ZenPlayer.ZenAudio.dit_230ms_chickadee_dee.wav",
+                DahResourceName     = "ZenPlayer.ZenAudio.dah_456_ms_chickadee_bee.wav",
+                DitDuration = 230,
+                DahDuration = 456,
+                SilentDitDuration = 10,
+                SilentDahDuration = 100,
             },
             new DitDahSettings {
                 ConfigName          = "Bell and wood",
@@ -85,6 +100,8 @@ namespace ZenPlayer
                 DahResourceName     = "ZenPlayer.ZenAudio.dah_202ms_bell.wav",
                 DitDuration = 67,
                 DahDuration = 202,
+                SilentDitDuration = 60,
+                SilentDahDuration = 180,
             }
         };
 
@@ -207,8 +224,8 @@ namespace ZenPlayer
                                 }
                                 // Morse code timing says to leave the duration of one dit
                                 // between dits and dahs.
-                                symbolTime += activeDitDahSettings.DitDuration;
-                                await Task.Delay(activeDitDahSettings.DitDuration, pauseToken);
+                                symbolTime += activeDitDahSettings.SilentDitDuration;
+                                await Task.Delay(activeDitDahSettings.SilentDitDuration, pauseToken);
                             }
                         }
                         else
@@ -225,7 +242,7 @@ namespace ZenPlayer
                             }
                             else
                             {
-                                await Task.Delay(3 * activeDitDahSettings.DitDuration);
+                                await Task.Delay(activeDitDahSettings.SilentDahDuration);
                             }
                         }
                     }

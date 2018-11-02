@@ -12,9 +12,17 @@ To report a bug, click the "Issues" tab, and click "New issue".
 
 ![Screenshot of Zen Player](https://github.com/jwalthour/morse_player/blob/master/screenshot_initial.png)
 
-# Attribution
+# Attribution and licensing
 
 This work was made possible by the following contributors:
+
+## Creative Commons Attribution Share-Alike license:
+
+The following works are used here, licensed under the [Creative Commons Attribution Share-Alike License](https://creativecommons.org/licenses/by-sa/3.0/):
+- Black-capped Chickadee (Poecile atricapillus)
+    - [Recording by Jonathon Jongsma](https://en.wikipedia.org/wiki/File:Poecile_atricapillus_-_Black-capped_Chickadee_-_XC70185.ogg)
+    - This recording has been cut to a single note, and is available (here)[https://github.com/jwalthour/morse_player/tree/develop/ZenPlayer/ZenPlayer/ZenAudio/dah_284ms_chickadee_fee.wav] under the same license
+
 
 ## Creative Commons Zero license:
 
@@ -31,6 +39,9 @@ And by Wikimedia commons user [Kendrick Shaw](https://commons.wikimedia.org/wiki
 
 The following works are used here, licensed under the [Creative Commons Attribution License](https://creativecommons.org/licenses/by/3.0/):
 
+- [wildear1](https://freesound.org/people/wildear1/sounds/94848/)
+## Creative Commons Attribution Noncommercial license:
+
+The following works are used here, licensed under the [Creative Commons Attribution Noncommercial License](https://creativecommons.org/licenses/by-nc/3.0/):
+
 ### Freesound users:
-- [kfosse13](https://freesound.org/people/kfosse13/sounds/423689/)
-- [RHumphries](https://freesound.org/people/RHumphries/sounds/2523/)
