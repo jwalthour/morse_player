@@ -53,8 +53,6 @@ namespace ZenPlayer
             public string ConfigName;
             public string DitResourceName;
             public string DahResourceName;
-            public int DitDuration;
-            public int DahDuration;
             /// <summary>Duration used as a pause between dits/dahs</summary>
             public int SilentDitDuration;
             /// <summary>Duration used as a pause between symbols</summary>
@@ -80,8 +78,6 @@ namespace ZenPlayer
                 ConfigName          = "440Hz tones",
                 DitResourceName     = "ZenPlayer.ZenAudio.dit_100ms_440hz_tone.wav",
                 DahResourceName     = "ZenPlayer.ZenAudio.dah_300ms_440hz_tone.wav",
-                DitDuration = 100,
-                DahDuration = 300,
                 SilentDitDuration = 100,
                 SilentDahDuration = 300,
             },
@@ -89,8 +85,6 @@ namespace ZenPlayer
                 ConfigName          = "Chickadee",
                 DitResourceName     = "ZenPlayer.ZenAudio.dit_230ms_chickadee_dee.wav",
                 DahResourceName     = "ZenPlayer.ZenAudio.dah_456_ms_chickadee_bee.wav",
-                DitDuration = 230,
-                DahDuration = 456,
                 SilentDitDuration = 10,
                 SilentDahDuration = 100,
             },
@@ -98,8 +92,6 @@ namespace ZenPlayer
                 ConfigName          = "Bell and wood",
                 DitResourceName     = "ZenPlayer.ZenAudio.dit_67ms_wood_block.wav",
                 DahResourceName     = "ZenPlayer.ZenAudio.dah_202ms_bell.wav",
-                DitDuration = 67,
-                DahDuration = 202,
                 SilentDitDuration = 60,
                 SilentDahDuration = 180,
             }
