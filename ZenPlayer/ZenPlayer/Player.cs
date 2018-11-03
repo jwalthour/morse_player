@@ -198,14 +198,14 @@ namespace ZenPlayer
                 {
                     for (; nextTextIndex < Text.Length && !pauseToken.IsCancellationRequested; ++nextTextIndex)
                     {
+                        DateTime timeSymStart = DateTime.Now;
+
                         MorseElement[] seq = GetSymbolForLetter(Text[nextTextIndex]);
-                        int symbolTime = 0;
                         if (Text[nextTextIndex] == ' ')
                         {
                             // Strict morse code timing says a space is a silent Dah,
                             // which is the duration of 3 dits.
-                            symbolTime = activeDitDahSettings.DitDuration * 3;
-                            await Task.Delay(symbolTime, pauseToken);
+                            await Task.Delay(activeDitDahSettings.SilentDahDuration, pauseToken);
                         }
                         else if (seq != null)
                         {
@@ -214,17 +214,14 @@ namespace ZenPlayer
                                 switch (el)
                                 {
                                     case MorseElement.DIT:
-                                        symbolTime += activeDitDahSettings.DitDuration;
                                         await Task.Run(() => { ditPlayer.PlaySync(); }, pauseToken);
                                         break;
                                     case MorseElement.DAH:
-                                        symbolTime += activeDitDahSettings.DahDuration;
                                         await Task.Run(() => { dahPlayer.PlaySync(); }, pauseToken);
                                         break;
                                 }
                                 // Morse code timing says to leave the duration of one dit
                                 // between dits and dahs.
-                                symbolTime += activeDitDahSettings.SilentDitDuration;
                                 await Task.Delay(activeDitDahSettings.SilentDitDuration, pauseToken);
                             }
                         }
@@ -236,9 +233,11 @@ namespace ZenPlayer
                         OnProgress?.Invoke(nextTextIndex + 1);
                         if (nextTextIndex < Text.Length - 1)
                         {
-                            if (symbolTime < SymbolIntervalMs)
+                            TimeSpan ts = DateTime.Now.Subtract(timeSymStart);
+
+                            if (ts.TotalMilliseconds < SymbolIntervalMs)
                             {
-                                await Task.Delay(SymbolIntervalMs - symbolTime, pauseToken);
+                                await Task.Delay(SymbolIntervalMs - (int)ts.TotalMilliseconds, pauseToken);
                             }
                             else
                             {
