@@ -51,8 +51,8 @@ namespace ZenPlayer
         public struct DitDahSettings
         {
             public string ConfigName;
-            public string DitResourceName;
-            public string DahResourceName;
+            public string[] DitResourceNames;
+            public string[] DahResourceNames;
             /// <summary>Duration used as a pause between dits/dahs</summary>
             public int SilentDitDuration;
             /// <summary>Duration used as a pause between symbols</summary>
@@ -76,31 +76,44 @@ namespace ZenPlayer
         {
             new DitDahSettings {
                 ConfigName          = "440Hz tones",
-                DitResourceName     = "ZenPlayer.ZenAudio.dit_100ms_440hz_tone.wav",
-                DahResourceName     = "ZenPlayer.ZenAudio.dah_300ms_440hz_tone.wav",
+                DitResourceNames    = new string[] {"ZenPlayer.ZenAudio.dit_100ms_440hz_tone.wav" },
+                DahResourceNames    = new string[] {"ZenPlayer.ZenAudio.dah_300ms_440hz_tone.wav"},
                 SilentDitDuration = 100,
                 SilentDahDuration = 300,
             },
             new DitDahSettings {
                 ConfigName          = "Chickadee",
-                DitResourceName     = "ZenPlayer.ZenAudio.dit_230ms_chickadee_dee.wav",
-                DahResourceName     = "ZenPlayer.ZenAudio.dah_456_ms_chickadee_bee.wav",
+                DitResourceNames    = new string[] {
+                    "ZenPlayer.ZenAudio.dit_219ms_chickadee_dee.wav",
+                    "ZenPlayer.ZenAudio.dit_219ms_chickadee_dee1.wav",
+                    "ZenPlayer.ZenAudio.dit_222ms_chickadee_dee.wav",
+                    "ZenPlayer.ZenAudio.dit_226ms_chickadee_dee.wav",
+                    "ZenPlayer.ZenAudio.dit_229ms_chickadee_dee.wav",
+                    "ZenPlayer.ZenAudio.dit_230ms_chickadee_dee.wav",
+                },
+                DahResourceNames    = new string[] {
+                    "ZenPlayer.ZenAudio.dah_330ms_chickadee_fee.wav",
+                    "ZenPlayer.ZenAudio.dah_364ms_chickadee_fee.wav",
+                    "ZenPlayer.ZenAudio.dah_407ms_chickadee_fee.wav",
+                    "ZenPlayer.ZenAudio.dah_442ms_chickadee_bee.wav",
+                    "ZenPlayer.ZenAudio.dah_456ms_chickadee_bee.wav",
+                    "ZenPlayer.ZenAudio.dah_463ms_chickadee_bee.wav",
+                },
                 SilentDitDuration = 10,
                 SilentDahDuration = 100,
             },
             new DitDahSettings {
                 ConfigName          = "Bell and wood",
-                DitResourceName     = "ZenPlayer.ZenAudio.dit_67ms_wood_block.wav",
-                DahResourceName     = "ZenPlayer.ZenAudio.dah_202ms_bell.wav",
+                DitResourceNames    = new string[] {"ZenPlayer.ZenAudio.dit_67ms_wood_block.wav" },
+                DahResourceNames    = new string[] {"ZenPlayer.ZenAudio.dah_202ms_bell.wav" },
                 SilentDitDuration = 60,
                 SilentDahDuration = 180,
             }
         };
 
 
-        private System.Media.SoundPlayer ditPlayer = null;
-        private System.Media.SoundPlayer dahPlayer = null;
-        private System.Media.SoundPlayer ambientPlayer = null;
+        private System.Media.SoundPlayer[] ditPlayers = null;
+        private System.Media.SoundPlayer[] dahPlayers = null;
         CancellationTokenSource pauseTokenSource;
         CancellationToken pauseToken;
 
@@ -117,14 +130,26 @@ namespace ZenPlayer
         {
             activeDitDahSettings = settings;
             System.Reflection.Assembly a = System.Reflection.Assembly.GetExecutingAssembly();
-            System.IO.Stream ditStream = a.GetManifestResourceStream(activeDitDahSettings.DitResourceName);
-            System.IO.Stream dahStream = a.GetManifestResourceStream(activeDitDahSettings.DahResourceName);
-            // TODO: do the same for ambient sounds
-            ditPlayer = new System.Media.SoundPlayer(ditStream);
-            dahPlayer = new System.Media.SoundPlayer(dahStream);
-            await Task.Run(() => { ditPlayer.Load(); });
-            await Task.Run(() => { dahPlayer.Load(); });
-
+            int numDits = settings.DitResourceNames.Length;
+            int numDahs = settings.DahResourceNames.Length;
+            ditPlayers = new System.Media.SoundPlayer[numDits];
+            dahPlayers = new System.Media.SoundPlayer[numDahs];
+            for (int i = 0; i < numDits; ++i)
+            {
+                System.IO.Stream ditStream = a.GetManifestResourceStream(settings.DitResourceNames[i]);
+                ditPlayers[i] = new System.Media.SoundPlayer(ditStream);
+                // We could probably run all these in parallel.
+                // But generally they're loading from the same disk, so I'm not sure that'd save any time.
+                await Task.Run(() => { ditPlayers[i].Load(); });
+            }
+            for (int i = 0; i < numDahs; ++i)
+            {
+                System.IO.Stream dahStream = a.GetManifestResourceStream(settings.DahResourceNames[i]);
+                dahPlayers[i] = new System.Media.SoundPlayer(dahStream);
+                // We could probably run all these in parallel.
+                // But generally they're loading from the same disk, so I'm not sure that'd save any time.
+                await Task.Run(() => { dahPlayers[i].Load(); });
+            }
         }
 
         public string Text { get; set; }
@@ -132,7 +157,6 @@ namespace ZenPlayer
         public void Play()
         {
             nextState = State.STOPPED;
-            ambientPlayer?.Play();
             pauseTokenSource = new CancellationTokenSource();
             pauseToken = pauseTokenSource.Token;
             Task task = Task.Run((Action)PlayMorseCode);
@@ -149,7 +173,6 @@ namespace ZenPlayer
             }
             ditPlayer?.Stop();
             dahPlayer?.Stop();
-            ambientPlayer?.Stop();
         }
 
         public void Stop()
