@@ -88,21 +88,24 @@ namespace ZenPlayer
         /// <param name="i">Index into TextToPlay.Text for the next letter to play</param>
         private void UpdatePlayingText(int i)
         {
-            if (i > 0) {
-                TextBlockPastText.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(Math.Max(0, i - LETTERS_EITHER_SIDE), Math.Min(i, LETTERS_EITHER_SIDE));
+            // -1 to display the character that just played
+            // 0 to display the character that's about to play
+            const int OFFSET = -1;
+            if ((i+OFFSET) > 0) {
+                TextBlockPastText.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(Math.Max(0, (i+OFFSET) - LETTERS_EITHER_SIDE), Math.Min((i+OFFSET), LETTERS_EITHER_SIDE));
             } else {
                 TextBlockPastText.Text = "";
             }
-            if (i < TextToPlay.Text.Length)
+            if ((i+OFFSET) < TextToPlay.Text.Length)
             {
-                TextBlockCurLetter.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(i, 1);
+                TextBlockCurLetter.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring((i+OFFSET), 1);
             } else
             {
                 TextBlockCurLetter.Text = "";
                 TextBlockCurSymbol.Text = "";
             }
-            if (i < TextToPlay.Text.Length - 1) {
-                TextBlockFutureText.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring(i + 1, Math.Min(LETTERS_EITHER_SIDE, TextToPlay.Text.Length - i - 1));
+            if ((i+OFFSET) < TextToPlay.Text.Length - 1) {
+                TextBlockFutureText.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring((i+OFFSET) + 1, Math.Min(LETTERS_EITHER_SIDE, TextToPlay.Text.Length - (i+OFFSET) - 1));
             }
             else {
                 TextBlockFutureText.Text = "";

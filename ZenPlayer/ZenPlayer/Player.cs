@@ -218,6 +218,7 @@ namespace ZenPlayer
                     for (; nextTextIndex < Text.Length && !pauseToken.IsCancellationRequested; ++nextTextIndex)
                     {
                         DateTime timeSymStart = DateTime.Now;
+                        OnProgress?.Invoke(nextTextIndex + 1);
 
                         MorseElement[] seq = GetSymbolForLetter(Text[nextTextIndex]);
                         if (Text[nextTextIndex] == ' ')
@@ -261,7 +262,6 @@ namespace ZenPlayer
                             // Symbol not recognized.
                             // Skip.
                         }
-                        OnProgress?.Invoke(nextTextIndex + 1);
                         if (nextTextIndex < Text.Length - 1 || Loop)
                         {
                             TimeSpan ts = DateTime.Now.Subtract(timeSymStart);
