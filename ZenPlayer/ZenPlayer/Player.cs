@@ -112,8 +112,8 @@ namespace ZenPlayer
         };
 
 
-        private System.Media.SoundPlayer[] ditPlayers = null;
-        private System.Media.SoundPlayer[] dahPlayers = null;
+        private List<System.Media.SoundPlayer> ditPlayers = null;
+        private List<System.Media.SoundPlayer> dahPlayers = null;
         private CancellationTokenSource pauseTokenSource;
         private CancellationToken pauseToken;
         private System.Media.SoundPlayer curDitPlayer = null;
@@ -132,28 +132,28 @@ namespace ZenPlayer
         /// <param name="settings"></param>
         public async void LoadDitDahFiles(DitDahSettings settings)
         {
+            ditPlayers = new List<System.Media.SoundPlayer>();
+            dahPlayers = new List<System.Media.SoundPlayer>();
             activeDitDahSettings = settings;
             System.Reflection.Assembly a = System.Reflection.Assembly.GetExecutingAssembly();
-            int numDits = settings.DitResourceNames.Length;
-            int numDahs = settings.DahResourceNames.Length;
-            ditPlayers = new System.Media.SoundPlayer[numDits];
-            dahPlayers = new System.Media.SoundPlayer[numDahs];
-            for (int i = 0; i < numDits; ++i)
+            foreach(string name in settings.DitResourceNames)
             {
-                System.IO.Stream ditStream = a.GetManifestResourceStream(settings.DitResourceNames[i]);
-                ditPlayers[i] = new System.Media.SoundPlayer(ditStream);
+                System.IO.Stream ditStream = a.GetManifestResourceStream(name);
+                ditPlayers.Add(new System.Media.SoundPlayer(ditStream));
                 // We could probably run all these in parallel.
                 // But generally they're loading from the same disk, so I'm not sure that'd save any time.
-                await Task.Run(() => { ditPlayers[i].Load(); });
+                await Task.Run(() => { ditPlayers.Last().Load(); });
             }
-            for (int i = 0; i < numDahs; ++i)
+            foreach (string name in settings.DahResourceNames)
             {
-                System.IO.Stream dahStream = a.GetManifestResourceStream(settings.DahResourceNames[i]);
-                dahPlayers[i] = new System.Media.SoundPlayer(dahStream);
+                System.IO.Stream dahStream = a.GetManifestResourceStream(name);
+                dahPlayers.Add(new System.Media.SoundPlayer(dahStream));
                 // We could probably run all these in parallel.
                 // But generally they're loading from the same disk, so I'm not sure that'd save any time.
-                await Task.Run(() => { dahPlayers[i].Load(); });
+                await Task.Run(() => { dahPlayers.Last().Load(); });
             }
+            ditPlayers.Shuffle();
+            dahPlayers.Shuffle();
         }
 
         public string Text { get; set; }
@@ -234,18 +234,18 @@ namespace ZenPlayer
                                 {
                                     case MorseElement.DIT:
                                         curDitPlayer = ditPlayers[nextDitIndex++];
-                                        if(nextDitIndex >= ditPlayers.Length)
+                                        if(nextDitIndex >= ditPlayers.Count) // Can we do this with an iterator?
                                         {
-                                            // TODO: shuffle
+                                            ditPlayers.Shuffle();
                                             nextDitIndex = 0;
                                         }
                                         await Task.Run(() => { curDitPlayer.PlaySync(); }, pauseToken);
                                         break;
                                     case MorseElement.DAH:
                                         curDahPlayer = dahPlayers[nextDahIndex++];
-                                        if (nextDahIndex >= dahPlayers.Length)
+                                        if (nextDahIndex >= dahPlayers.Count)
                                         {
-                                            // TODO: shuffle
+                                            dahPlayers.Shuffle();
                                             nextDahIndex = 0;
                                         }
                                         await Task.Run(() => { curDahPlayer.PlaySync(); }, pauseToken);
