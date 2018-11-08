@@ -111,6 +111,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MyExtensions.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -141,16 +142,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ZenAudio\219159__jagadamba__frogblock03.wav" />
-    <EmbeddedResource Include="ZenAudio\219161__jagadamba__frogblock01.wav" />
-    <EmbeddedResource Include="ZenAudio\346328__isteak__bright-tibetan-bell-ding-b-note-cleaner.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="ZenAudio\trimmed_346328__isteak__bright-tibetan-bell-ding-b-note-cleaner.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="ZenAudio\dah_202ms.wav" />
-    <EmbeddedResource Include="ZenAudio\dit0_67ms.wav" />
+    <EmbeddedResource Include="ZenAudio\dah_202ms_bell.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_67ms_wood_block.wav" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Enso.ico" />
@@ -166,6 +159,26 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ZenAudio\dah_300ms_440hz_tone.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_100ms_440hz_tone.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ZenAudio\dit_230ms_chickadee_dee.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ZenAudio\dah_330ms_chickadee_fee.wav" />
+    <EmbeddedResource Include="ZenAudio\dah_364ms_chickadee_fee.wav" />
+    <EmbeddedResource Include="ZenAudio\dah_407ms_chickadee_fee.wav" />
+    <EmbeddedResource Include="ZenAudio\dah_442ms_chickadee_bee.wav" />
+    <EmbeddedResource Include="ZenAudio\dah_456ms_chickadee_bee.wav" />
+    <EmbeddedResource Include="ZenAudio\dah_463ms_chickadee_bee.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_219ms_chickadee_dee.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_219ms_chickadee_dee1.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_222ms_chickadee_dee.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_226ms_chickadee_dee.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_229ms_chickadee_dee.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

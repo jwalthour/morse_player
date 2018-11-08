@@ -48,43 +48,78 @@ namespace ZenPlayer
         /// Since this object has no such concept as invalid state, and merely
         /// serves as a collection of variables, I think it's OK to break dogma.
         /// </summary>
-        public struct Settings
+        public struct DitDahSettings
         {
             public string ConfigName;
-            public string DitResourceName;
-            public string DahResourceName;
-            public string AmbientResourceName;
-            public int DitDuration;
-            public int DahDuration;
-            public int AmbientDuration;
+            public string[] DitResourceNames;
+            public string[] DahResourceNames;
+            /// <summary>Duration used as a pause between dits/dahs</summary>
+            public int InterElementPauseDuration;
+            /// <summary>Duration used as a pause between symbols</summary>
+            public int MinInterSymbolDuration;
+
+            public override string ToString()
+            {
+                return ConfigName;
+            }
+
         }
 
-        private Settings activeSettings;
-        private int nextTextIndex = 0;
+        private DitDahSettings activeDitDahSettings;
+        private int nextTextIndex = 0; 
 
         /// <summary>
         /// A list of the options that are valid to choose.
         /// Ideally these would be read from a config file or something.
         /// </summary>
-        public static readonly Settings[] AvailableSettings =
+        public static readonly DitDahSettings[] AvailableDitDahSettings =
         {
-            new Settings {
+            new DitDahSettings {
+                ConfigName          = "440Hz tones",
+                DitResourceNames    = new string[] {"ZenPlayer.ZenAudio.dit_100ms_440hz_tone.wav" },
+                DahResourceNames    = new string[] {"ZenPlayer.ZenAudio.dah_300ms_440hz_tone.wav"},
+                InterElementPauseDuration = 100,
+                MinInterSymbolDuration = 300,
+            },
+            new DitDahSettings {
+                ConfigName          = "Chickadee",
+                DitResourceNames    = new string[] {
+                    "ZenPlayer.ZenAudio.dit_219ms_chickadee_dee.wav",
+                    "ZenPlayer.ZenAudio.dit_219ms_chickadee_dee1.wav",
+                    "ZenPlayer.ZenAudio.dit_222ms_chickadee_dee.wav",
+                    "ZenPlayer.ZenAudio.dit_226ms_chickadee_dee.wav",
+                    "ZenPlayer.ZenAudio.dit_229ms_chickadee_dee.wav",
+                    "ZenPlayer.ZenAudio.dit_230ms_chickadee_dee.wav",
+                },
+                DahResourceNames    = new string[] {
+                    "ZenPlayer.ZenAudio.dah_330ms_chickadee_fee.wav",
+                    "ZenPlayer.ZenAudio.dah_364ms_chickadee_fee.wav",
+                    "ZenPlayer.ZenAudio.dah_407ms_chickadee_fee.wav",
+                    "ZenPlayer.ZenAudio.dah_442ms_chickadee_bee.wav",
+                    "ZenPlayer.ZenAudio.dah_456ms_chickadee_bee.wav",
+                    "ZenPlayer.ZenAudio.dah_463ms_chickadee_bee.wav",
+                },
+                InterElementPauseDuration = 0,
+                MinInterSymbolDuration = 1000,
+            },
+            new DitDahSettings {
                 ConfigName          = "Bell and wood",
-                DitResourceName     = "ZenPlayer.ZenAudio.dit0_67ms.wav",
-                DahResourceName     = "ZenPlayer.ZenAudio.dah_202ms.wav",
-                AmbientResourceName = "",
-                DitDuration = 67,
-                DahDuration = 202,
-                AmbientDuration = 0,
+                DitResourceNames    = new string[] {"ZenPlayer.ZenAudio.dit_67ms_wood_block.wav" },
+                DahResourceNames    = new string[] {"ZenPlayer.ZenAudio.dah_202ms_bell.wav" },
+                InterElementPauseDuration = 60,
+                MinInterSymbolDuration = 180,
             }
         };
 
 
-        private System.Media.SoundPlayer ditPlayer = null;
-        private System.Media.SoundPlayer dahPlayer = null;
-        private System.Media.SoundPlayer ambientPlayer = null;
-        CancellationTokenSource pauseTokenSource;
-        CancellationToken pauseToken;
+        private List<System.Media.SoundPlayer> ditPlayers = null;
+        private List<System.Media.SoundPlayer> dahPlayers = null;
+        private CancellationTokenSource pauseTokenSource;
+        private CancellationToken pauseToken;
+        private System.Media.SoundPlayer curDitPlayer = null;
+        private System.Media.SoundPlayer curDahPlayer = null;
+        private int nextDitIndex = 0;
+        private int nextDahIndex = 0;
 
         public Player()
         {
@@ -95,18 +130,30 @@ namespace ZenPlayer
         /// Prepares to play the given settings by loading them into memory.
         /// </summary>
         /// <param name="settings"></param>
-        public async void LoadFiles(Settings settings)
+        public async void LoadDitDahFiles(DitDahSettings settings)
         {
-            activeSettings = settings;
+            ditPlayers = new List<System.Media.SoundPlayer>();
+            dahPlayers = new List<System.Media.SoundPlayer>();
+            activeDitDahSettings = settings;
             System.Reflection.Assembly a = System.Reflection.Assembly.GetExecutingAssembly();
-            System.IO.Stream ditStream = a.GetManifestResourceStream("ZenPlayer.ZenAudio.dit0_67ms.wav");
-            System.IO.Stream dahStream = a.GetManifestResourceStream("ZenPlayer.ZenAudio.dah_202ms.wav");
-            // TODO: do the same for ambient sounds
-            ditPlayer = new System.Media.SoundPlayer(ditStream);
-            dahPlayer = new System.Media.SoundPlayer(dahStream);
-            await Task.Run(() => { ditPlayer.Load(); });
-            await Task.Run(() => { dahPlayer.Load(); });
-
+            foreach(string name in settings.DitResourceNames)
+            {
+                System.IO.Stream ditStream = a.GetManifestResourceStream(name);
+                ditPlayers.Add(new System.Media.SoundPlayer(ditStream));
+                // We could probably run all these in parallel.
+                // But generally they're loading from the same disk, so I'm not sure that'd save any time.
+                await Task.Run(() => { ditPlayers.Last().Load(); });
+            }
+            foreach (string name in settings.DahResourceNames)
+            {
+                System.IO.Stream dahStream = a.GetManifestResourceStream(name);
+                dahPlayers.Add(new System.Media.SoundPlayer(dahStream));
+                // We could probably run all these in parallel.
+                // But generally they're loading from the same disk, so I'm not sure that'd save any time.
+                await Task.Run(() => { dahPlayers.Last().Load(); });
+            }
+            ditPlayers.Shuffle();
+            dahPlayers.Shuffle();
         }
 
         public string Text { get; set; }
@@ -114,7 +161,6 @@ namespace ZenPlayer
         public void Play()
         {
             nextState = State.STOPPED;
-            ambientPlayer?.Play();
             pauseTokenSource = new CancellationTokenSource();
             pauseToken = pauseTokenSource.Token;
             Task task = Task.Run((Action)PlayMorseCode);
@@ -129,9 +175,8 @@ namespace ZenPlayer
             {
                 pauseTokenSource.Cancel();
             }
-            ditPlayer?.Stop();
-            dahPlayer?.Stop();
-            ambientPlayer?.Stop();
+            curDitPlayer?.Stop();
+            curDahPlayer?.Stop();
         }
 
         public void Stop()
@@ -172,14 +217,14 @@ namespace ZenPlayer
                 {
                     for (; nextTextIndex < Text.Length && !pauseToken.IsCancellationRequested; ++nextTextIndex)
                     {
+                        DateTime timeSymStart = DateTime.Now;
+
                         MorseElement[] seq = GetSymbolForLetter(Text[nextTextIndex]);
-                        int symbolTime = 0;
                         if (Text[nextTextIndex] == ' ')
                         {
                             // Strict morse code timing says a space is a silent Dah,
                             // which is the duration of 3 dits.
-                            symbolTime = activeSettings.DitDuration * 3;
-                            await Task.Delay(symbolTime, pauseToken);
+                            await Task.Delay(activeDitDahSettings.MinInterSymbolDuration, pauseToken);
                         }
                         else if (seq != null)
                         {
@@ -188,18 +233,27 @@ namespace ZenPlayer
                                 switch (el)
                                 {
                                     case MorseElement.DIT:
-                                        symbolTime += activeSettings.DitDuration;
-                                        await Task.Run(() => { ditPlayer.PlaySync(); }, pauseToken);
+                                        curDitPlayer = ditPlayers[nextDitIndex++];
+                                        if(nextDitIndex >= ditPlayers.Count) // Can we do this with an iterator?
+                                        {
+                                            ditPlayers.Shuffle();
+                                            nextDitIndex = 0;
+                                        }
+                                        await Task.Run(() => { curDitPlayer.PlaySync(); }, pauseToken);
                                         break;
                                     case MorseElement.DAH:
-                                        symbolTime += activeSettings.DahDuration;
-                                        await Task.Run(() => { dahPlayer.PlaySync(); }, pauseToken);
+                                        curDahPlayer = dahPlayers[nextDahIndex++];
+                                        if (nextDahIndex >= dahPlayers.Count)
+                                        {
+                                            dahPlayers.Shuffle();
+                                            nextDahIndex = 0;
+                                        }
+                                        await Task.Run(() => { curDahPlayer.PlaySync(); }, pauseToken);
                                         break;
                                 }
                                 // Morse code timing says to leave the duration of one dit
                                 // between dits and dahs.
-                                symbolTime += activeSettings.DitDuration;
-                                await Task.Delay(activeSettings.DitDuration, pauseToken);
+                                await Task.Delay(activeDitDahSettings.InterElementPauseDuration, pauseToken);
                             }
                         }
                         else
@@ -208,15 +262,17 @@ namespace ZenPlayer
                             // Skip.
                         }
                         OnProgress?.Invoke(nextTextIndex + 1);
-                        if (nextTextIndex < Text.Length - 1)
+                        if (nextTextIndex < Text.Length - 1 || Loop)
                         {
-                            if (symbolTime < SymbolIntervalMs)
+                            TimeSpan ts = DateTime.Now.Subtract(timeSymStart);
+
+                            if (ts.TotalMilliseconds + activeDitDahSettings.MinInterSymbolDuration < SymbolIntervalMs)
                             {
-                                await Task.Delay(SymbolIntervalMs - symbolTime, pauseToken);
+                                await Task.Delay(SymbolIntervalMs - (int)(ts.TotalMilliseconds + activeDitDahSettings.MinInterSymbolDuration), pauseToken);
                             }
                             else
                             {
-                                await Task.Delay(3 * activeSettings.DitDuration);
+                                await Task.Delay(activeDitDahSettings.MinInterSymbolDuration);
                             }
                         }
                     }
