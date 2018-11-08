@@ -32,6 +32,7 @@ The following works are used here, licensed under the [Creative Commons Zero Lic
 
 - [Jagadamba](https://freesound.org/people/Jagadamba/sounds/219159/)
 - [isteak](https://freesound.org/people/isteak/sounds/346328/)
+- [FunkApache](https://freesound.org/people/FunkApache/sounds/393389/)
 
 And by Wikimedia commons user [Kendrick Shaw](https://commons.wikimedia.org/wiki/File:Enso.svg).
 
@@ -45,3 +46,4 @@ The following works are used here, licensed under the [Creative Commons Attribut
 The following works are used here, licensed under the [Creative Commons Attribution Noncommercial License](https://creativecommons.org/licenses/by-nc/3.0/):
 
 ### Freesound users:
+- [imonacan] (https://freesound.org/people/imonacan/sounds/53794/)

@@ -111,6 +111,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MyExtensions.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -164,8 +165,20 @@
     <EmbeddedResource Include="ZenAudio\dit_100ms_440hz_tone.wav" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ZenAudio\dah_456_ms_chickadee_bee.wav" />
     <EmbeddedResource Include="ZenAudio\dit_230ms_chickadee_dee.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ZenAudio\dah_330ms_chickadee_fee.wav" />
+    <EmbeddedResource Include="ZenAudio\dah_364ms_chickadee_fee.wav" />
+    <EmbeddedResource Include="ZenAudio\dah_407ms_chickadee_fee.wav" />
+    <EmbeddedResource Include="ZenAudio\dah_442ms_chickadee_bee.wav" />
+    <EmbeddedResource Include="ZenAudio\dah_456ms_chickadee_bee.wav" />
+    <EmbeddedResource Include="ZenAudio\dah_463ms_chickadee_bee.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_219ms_chickadee_dee.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_219ms_chickadee_dee1.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_222ms_chickadee_dee.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_226ms_chickadee_dee.wav" />
+    <EmbeddedResource Include="ZenAudio\dit_229ms_chickadee_dee.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
