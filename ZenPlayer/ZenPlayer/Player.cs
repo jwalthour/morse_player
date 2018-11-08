@@ -262,7 +262,7 @@ namespace ZenPlayer
                             // Skip.
                         }
                         OnProgress?.Invoke(nextTextIndex + 1);
-                        if (nextTextIndex < Text.Length - 1)
+                        if (nextTextIndex < Text.Length - 1 || Loop)
                         {
                             TimeSpan ts = DateTime.Now.Subtract(timeSymStart);
 

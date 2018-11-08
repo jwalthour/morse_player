@@ -10,6 +10,7 @@ namespace ZenPlayer
     {
         private static Random rng = new Random();
 
+        // Courtesy https://stackoverflow.com/a/1262619/415551
         public static void Shuffle<T>(this IList<T> list)
         {
             int n = list.Count;
