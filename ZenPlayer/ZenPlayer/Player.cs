@@ -54,9 +54,9 @@ namespace ZenPlayer
             public string[] DitResourceNames;
             public string[] DahResourceNames;
             /// <summary>Duration used as a pause between dits/dahs</summary>
-            public int SilentDitDuration;
+            public int InterElementPauseDuration;
             /// <summary>Duration used as a pause between symbols</summary>
-            public int SilentDahDuration;
+            public int MinInterSymbolDUration;
 
             public override string ToString()
             {
@@ -66,7 +66,7 @@ namespace ZenPlayer
         }
 
         private DitDahSettings activeDitDahSettings;
-        private int nextTextIndex = 0;
+        private int nextTextIndex = 0; 
 
         /// <summary>
         /// A list of the options that are valid to choose.
@@ -78,8 +78,8 @@ namespace ZenPlayer
                 ConfigName          = "440Hz tones",
                 DitResourceNames    = new string[] {"ZenPlayer.ZenAudio.dit_100ms_440hz_tone.wav" },
                 DahResourceNames    = new string[] {"ZenPlayer.ZenAudio.dah_300ms_440hz_tone.wav"},
-                SilentDitDuration = 100,
-                SilentDahDuration = 300,
+                InterElementPauseDuration = 100,
+                MinInterSymbolDUration = 300,
             },
             new DitDahSettings {
                 ConfigName          = "Chickadee",
@@ -99,23 +99,27 @@ namespace ZenPlayer
                     "ZenPlayer.ZenAudio.dah_456ms_chickadee_bee.wav",
                     "ZenPlayer.ZenAudio.dah_463ms_chickadee_bee.wav",
                 },
-                SilentDitDuration = 10,
-                SilentDahDuration = 100,
+                InterElementPauseDuration = 10,
+                MinInterSymbolDUration = 100,
             },
             new DitDahSettings {
                 ConfigName          = "Bell and wood",
                 DitResourceNames    = new string[] {"ZenPlayer.ZenAudio.dit_67ms_wood_block.wav" },
                 DahResourceNames    = new string[] {"ZenPlayer.ZenAudio.dah_202ms_bell.wav" },
-                SilentDitDuration = 60,
-                SilentDahDuration = 180,
+                InterElementPauseDuration = 60,
+                MinInterSymbolDUration = 180,
             }
         };
 
 
         private System.Media.SoundPlayer[] ditPlayers = null;
         private System.Media.SoundPlayer[] dahPlayers = null;
-        CancellationTokenSource pauseTokenSource;
-        CancellationToken pauseToken;
+        private CancellationTokenSource pauseTokenSource;
+        private CancellationToken pauseToken;
+        private System.Media.SoundPlayer curDitPlayer = null;
+        private System.Media.SoundPlayer curDahPlayer = null;
+        private int nextDitIndex = 0;
+        private int nextDahIndex = 0;
 
         public Player()
         {
@@ -171,8 +175,8 @@ namespace ZenPlayer
             {
                 pauseTokenSource.Cancel();
             }
-            ditPlayer?.Stop();
-            dahPlayer?.Stop();
+            curDitPlayer?.Stop();
+            curDahPlayer?.Stop();
         }
 
         public void Stop()
@@ -220,7 +224,7 @@ namespace ZenPlayer
                         {
                             // Strict morse code timing says a space is a silent Dah,
                             // which is the duration of 3 dits.
-                            await Task.Delay(activeDitDahSettings.SilentDahDuration, pauseToken);
+                            await Task.Delay(activeDitDahSettings.MinInterSymbolDUration, pauseToken);
                         }
                         else if (seq != null)
                         {
@@ -229,15 +233,27 @@ namespace ZenPlayer
                                 switch (el)
                                 {
                                     case MorseElement.DIT:
-                                        await Task.Run(() => { ditPlayer.PlaySync(); }, pauseToken);
+                                        curDitPlayer = ditPlayers[nextDitIndex++];
+                                        if(nextDitIndex >= ditPlayers.Length)
+                                        {
+                                            // TODO: shuffle
+                                            nextDitIndex = 0;
+                                        }
+                                        await Task.Run(() => { curDitPlayer.PlaySync(); }, pauseToken);
                                         break;
                                     case MorseElement.DAH:
-                                        await Task.Run(() => { dahPlayer.PlaySync(); }, pauseToken);
+                                        curDahPlayer = dahPlayers[nextDahIndex++];
+                                        if (nextDahIndex >= dahPlayers.Length)
+                                        {
+                                            // TODO: shuffle
+                                            nextDahIndex = 0;
+                                        }
+                                        await Task.Run(() => { curDahPlayer.PlaySync(); }, pauseToken);
                                         break;
                                 }
                                 // Morse code timing says to leave the duration of one dit
                                 // between dits and dahs.
-                                await Task.Delay(activeDitDahSettings.SilentDitDuration, pauseToken);
+                                await Task.Delay(activeDitDahSettings.InterElementPauseDuration, pauseToken);
                             }
                         }
                         else
@@ -256,7 +272,7 @@ namespace ZenPlayer
                             }
                             else
                             {
-                                await Task.Delay(activeDitDahSettings.SilentDahDuration);
+                                await Task.Delay(activeDitDahSettings.MinInterSymbolDUration);
                             }
                         }
                     }
