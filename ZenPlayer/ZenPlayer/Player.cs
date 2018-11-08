@@ -56,7 +56,7 @@ namespace ZenPlayer
             /// <summary>Duration used as a pause between dits/dahs</summary>
             public int InterElementPauseDuration;
             /// <summary>Duration used as a pause between symbols</summary>
-            public int MinInterSymbolDUration;
+            public int MinInterSymbolDuration;
 
             public override string ToString()
             {
@@ -79,7 +79,7 @@ namespace ZenPlayer
                 DitResourceNames    = new string[] {"ZenPlayer.ZenAudio.dit_100ms_440hz_tone.wav" },
                 DahResourceNames    = new string[] {"ZenPlayer.ZenAudio.dah_300ms_440hz_tone.wav"},
                 InterElementPauseDuration = 100,
-                MinInterSymbolDUration = 300,
+                MinInterSymbolDuration = 300,
             },
             new DitDahSettings {
                 ConfigName          = "Chickadee",
@@ -99,15 +99,15 @@ namespace ZenPlayer
                     "ZenPlayer.ZenAudio.dah_456ms_chickadee_bee.wav",
                     "ZenPlayer.ZenAudio.dah_463ms_chickadee_bee.wav",
                 },
-                InterElementPauseDuration = 10,
-                MinInterSymbolDUration = 100,
+                InterElementPauseDuration = 0,
+                MinInterSymbolDuration = 1000,
             },
             new DitDahSettings {
                 ConfigName          = "Bell and wood",
                 DitResourceNames    = new string[] {"ZenPlayer.ZenAudio.dit_67ms_wood_block.wav" },
                 DahResourceNames    = new string[] {"ZenPlayer.ZenAudio.dah_202ms_bell.wav" },
                 InterElementPauseDuration = 60,
-                MinInterSymbolDUration = 180,
+                MinInterSymbolDuration = 180,
             }
         };
 
@@ -224,7 +224,7 @@ namespace ZenPlayer
                         {
                             // Strict morse code timing says a space is a silent Dah,
                             // which is the duration of 3 dits.
-                            await Task.Delay(activeDitDahSettings.MinInterSymbolDUration, pauseToken);
+                            await Task.Delay(activeDitDahSettings.MinInterSymbolDuration, pauseToken);
                         }
                         else if (seq != null)
                         {
@@ -266,13 +266,13 @@ namespace ZenPlayer
                         {
                             TimeSpan ts = DateTime.Now.Subtract(timeSymStart);
 
-                            if (ts.TotalMilliseconds < SymbolIntervalMs)
+                            if (ts.TotalMilliseconds + activeDitDahSettings.MinInterSymbolDuration < SymbolIntervalMs)
                             {
-                                await Task.Delay(SymbolIntervalMs - (int)ts.TotalMilliseconds, pauseToken);
+                                await Task.Delay(SymbolIntervalMs - (int)(ts.TotalMilliseconds + activeDitDahSettings.MinInterSymbolDuration), pauseToken);
                             }
                             else
                             {
-                                await Task.Delay(activeDitDahSettings.MinInterSymbolDUration);
+                                await Task.Delay(activeDitDahSettings.MinInterSymbolDuration);
                             }
                         }
                     }
