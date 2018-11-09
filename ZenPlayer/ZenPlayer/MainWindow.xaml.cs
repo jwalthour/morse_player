@@ -96,7 +96,7 @@ namespace ZenPlayer
             } else {
                 TextBlockPastText.Text = "";
             }
-            if ((i+OFFSET) < TextToPlay.Text.Length)
+            if ((i + OFFSET) > 0 && (i+OFFSET) < TextToPlay.Text.Length)
             {
                 TextBlockCurLetter.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring((i+OFFSET), 1);
             } else
@@ -104,7 +104,7 @@ namespace ZenPlayer
                 TextBlockCurLetter.Text = "";
                 TextBlockCurSymbol.Text = "";
             }
-            if ((i+OFFSET) < TextToPlay.Text.Length - 1) {
+            if ((i + OFFSET) > 0 && (i +OFFSET) < TextToPlay.Text.Length - 1) {
                 TextBlockFutureText.Text = TextToPlay.Text.Replace("\r\n", "  ").Substring((i+OFFSET) + 1, Math.Min(LETTERS_EITHER_SIDE, TextToPlay.Text.Length - (i+OFFSET) - 1));
             }
             else {
