@@ -23,7 +23,7 @@ namespace ZenPlayer
         Player player = new Player();
 
         private const int SYMBOL_INTERVAL_MIN = 0;
-        private const int SYMBOL_INTERVAL_MAX = 3000;
+        private const int SYMBOL_INTERVAL_MAX = 5000;
 
         private const int LETTERS_EITHER_SIDE = 50;
 
