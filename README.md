@@ -21,7 +21,7 @@ This work was made possible by the following contributors:
 The following works are used here, licensed under the [Creative Commons Attribution Share-Alike License](https://creativecommons.org/licenses/by-sa/3.0/):
 - Black-capped Chickadee (Poecile atricapillus)
     - [Recording by Jonathon Jongsma](https://en.wikipedia.org/wiki/File:Poecile_atricapillus_-_Black-capped_Chickadee_-_XC70185.ogg)
-    - This recording has been cut to a single note, and is available (here)[https://github.com/jwalthour/morse_player/tree/develop/ZenPlayer/ZenPlayer/ZenAudio/dah_284ms_chickadee_fee.wav] under the same license
+    - This recording has been cut into some of its individual notes, and the results can be found in [this directory](https://github.com/jwalthour/morse_player/tree/develop/ZenPlayer/ZenPlayer/ZenAudio/dah_284ms_chickadee_fee.wav) under the same license
 
 
 ## Creative Commons Zero license:
@@ -46,4 +46,4 @@ The following works are used here, licensed under the [Creative Commons Attribut
 The following works are used here, licensed under the [Creative Commons Attribution Noncommercial License](https://creativecommons.org/licenses/by-nc/3.0/):
 
 ### Freesound users:
-- [imonacan] (https://freesound.org/people/imonacan/sounds/53794/)
+- [imonacan](https://freesound.org/people/imonacan/sounds/53794/)
